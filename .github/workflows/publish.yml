@@ -34,7 +34,6 @@ jobs:
       with:
         path: ./public
     
-  
   deploy:
     needs: build
     runs-on: ubuntu-latest
