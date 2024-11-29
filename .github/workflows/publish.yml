@@ -27,7 +27,7 @@ jobs:
         python-version: '3.13'
 
     - name: Run generate script
-      run: python3 generate.py
+      run: python3 generator.py
 
     - name: upload to GitHub Pages
       uses: actions/upload-pages-artifact@v3
