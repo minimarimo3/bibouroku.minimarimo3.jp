@@ -26,8 +26,8 @@ jobs:
       with:
         python-version: '3.13'
 
-    - name: Delete previous file
-      run: rm -fr ./public
+    - name: Delete previous pdf file
+      run: rm -fr ./public/pdf_files/
 
     - name: Run generate script
       run: python3 generator.py
