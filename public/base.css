@@ -1,0 +1,134 @@
+header {
+    padding: 10px 0;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    z-index: 1000;
+    min-width: 100%;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+header .nav {
+    display: flex;
+    flex: 1;
+    /* 等分割の設定 */
+    text-align: center;
+    font-size: 1.3em;
+    justify-content: space-between;
+    /* 等間隔配置 */
+    width: 80%;
+}
+
+header .nav a {
+    color: #ffffff;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+header .nav a:hover {
+    color: #00bfff;
+}
+
+/* 全体のスタイル */
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    background-color: #1c1c1c;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+}
+
+
+/* 中央に配置するためのコンテナ */
+main {
+    margin: auto 0;
+    width: 90%;
+}
+
+main a {
+    color: #B698FF;
+}
+
+/* 箇条書き */
+main ul {
+    list-style-type: none;
+    /* 左側の点を非表示 */
+    padding: 0;
+    margin: 20px 0;
+}
+
+main ul li {
+    margin: 10px 0;
+    font-size: 1.2em;
+}
+
+/* フッター内リンクのスタイル */
+footer a {
+    color: #cccccc;
+    text-decoration: none;
+    margin: 0 10px;
+}
+
+footer a:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+footer {
+    background-color: #333333;
+    /* 背景より少し薄い色 */
+    color: #cccccc;
+    padding: 1vh 0;
+    /* 上下にちょっと追加 */
+    text-align: center;
+    width: 100%;
+    /* bodyの100% */
+}
+
+
+.cards {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 30%);
+    /* 横3列 */
+    gap: 5%;
+    margin: 0;
+}
+
+/* モバイルサイズで1列にする */
+@media (max-width: 768px) {
+    .cards {
+        grid-template-columns: 1fr;
+        /* 1列 */
+    }
+}
+
+.cards a {
+    text-decoration: none;
+    color: white;
+}
+
+.cards a:hover {
+    text-decoration: underline;
+}
+
+.card {
+    background-color: #4c4c4c;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 14px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    text-align: center;
+    overflow-wrap: break-word;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
