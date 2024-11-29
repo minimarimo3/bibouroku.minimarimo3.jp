@@ -53,12 +53,11 @@ for full_path, date in pdf_files:
     dest_path = os.path.join(output_dir, filename)
     shutil.copy2(full_path, dest_path)  # PDFファイルをコピー
 
-    # <a href="PDF.jsでいい感じに開く"> YY-MM-DD: ファイル名</a>
     title = os.path.splitext(filename)[0]
     last_modified = datetime.datetime.fromtimestamp(date, datetime.timezone(datetime.timedelta(hours=9)))
 
     links.append(f"""\
-            <a href="web/viewer.html?file=../pdf_files/{filename}">
+            <a href="pdfjs/web/viewer.html?file=../../pdf_files/{filename}">
                 <article class="card">
                     <h3>{title}</h3>
                     <p>最終更新: <time datetime="{last_modified.isoformat()}">{last_modified.strftime("%y年%m月%d日")}</time></p><br>
