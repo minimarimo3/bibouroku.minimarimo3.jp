@@ -115,10 +115,14 @@
 ]
 
 /* 使い方
-report.typとかから
-#import "template.typ": configuration, TODO
-#show: 本文 => configuration(主題: "", 参考文献のパス: "reference.bib", 最終更新日: datetime(year: 2024, month: 08, day: 30), 要約: [
+
+#import "../template.typ": configuration, TODO
+#show: 本文 => configuration(
+  主題: TODO[],
+  タグ: (),
+  要約: TODO[
   要約を書く
 ], 本文)
+
 ここから本文を書いていく
 */
