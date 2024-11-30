@@ -55,4 +55,5 @@ PDFの閲覧にはPDF.jsを使用することにした。
 
 == 公開
 
-修正履歴が見れるようにGitHubのパブリックリポジトリで管理しようと思っているのでGitHub Pagesを使う。#link("https://docs.github.com/ja/pages/getting-started-with-github-pages/about-github-pages")[]
+修正履歴が見れるようにGitHubのパブリックリポジトリで管理しようと思っているのでGitHub Pagesを使う。
+#link("https://docs.github.com/ja/pages/getting-started-with-github-pages/about-github-pages")[]

@@ -83,11 +83,12 @@ footer {
     background-color: #333333;
     /* 背景より少し薄い色 */
     color: #cccccc;
-    padding: 1vh 0;
+    padding: 0.5vh 0;
     /* 上下にちょっと追加 */
     text-align: center;
     width: 100%;
     /* bodyの100% */
+    font-size: 10pt;
 }
 
 
