@@ -1,0 +1,49 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  pages: write  # GitHub Pagesへの書き込み権限
+  id-token: write  # OIDCトークンの権限（`deploy-pages`用）
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
+
+    - name: Delete previous pdf file
+      run: rm -fr ./public/pdf_files/
+
+    - name: Run generate script
+      run: python3 generator.py
+
+    - name: upload to GitHub Pages
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: ./public
+    
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+
+    steps:
+    - name: Deploy to GitHub Pages
+      uses: actions/deploy-pages@v4
