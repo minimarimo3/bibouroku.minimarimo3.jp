@@ -26,6 +26,18 @@ jobs:
       with:
         python-version: '3.13'
 
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install dependencies
+      run: |
+        pip install pypdf
+
     - name: Delete previous pdf file
       run: rm -fr ./public/pdf_files/
 

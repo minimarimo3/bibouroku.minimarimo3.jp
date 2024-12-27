@@ -2,6 +2,8 @@ import os
 import shutil
 import datetime
 
+from pypdf import PdfReader
+
 
 HTML_TEMPLATE_1 = r"""
 <!doctype html>
@@ -38,13 +40,26 @@ os.makedirs(output_dir, exist_ok=True)
 pdf_files = []
 for root, _, filenames in os.walk("."):  # 現在のディレクトリを再帰的に探索
     for filename in filenames:
-        if filename.endswith(".pdf"):  # PDFファイルを検索
-            full_path = os.path.join(root, filename)
-            about = None
-            if os.path.isfile((readme_path := os.path.join(root, "README.md"))):
-                about = open(readme_path, "r", encoding="utf-8").read()
-            last_modified = os.path.getmtime(full_path)  # 更新日時を取得
-            pdf_files.append((full_path, last_modified, about))
+        if not filename.endswith(".pdf"):
+            continue
+
+        about = None
+        if os.path.isfile((readme_path := os.path.join(root, "README.md"))):
+            with open(readme_path, "r", encoding="utf-8") as f:
+                about = f.read()
+
+        full_path = os.path.join(root, filename)
+        # 更新日時を取得(YYYY-MM-DD)
+        last_modified = datetime.datetime.fromtimestamp(os.path.getmtime(full_path)).strftime("%Y-%m-%d")
+
+        # あるならPDFファイルのメタデータから更新日時を取得したい
+        pdf_metadata = PdfReader(full_path).metadata
+        if pdf_metadata and "/ModDate" in pdf_metadata:
+            mod_date = pdf_metadata["/ModDate"]
+            # PDFの日付形式は`D:YYYYMMDDHHMMSS`
+            last_modified = f"{mod_date[2:6]}-{mod_date[6:8]}-{mod_date[8:10]}"
+
+        pdf_files.append((full_path, last_modified, about))
 
 # 更新日時で昇順にソート
 pdf_files.sort(key=lambda x: x[1])
