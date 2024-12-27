@@ -66,19 +66,18 @@ pdf_files.sort(key=lambda x: x[1])
 
 # PDFファイルをコピーし、HTMLリンクを作成
 links = []
-for full_path, date, about in pdf_files:
+for full_path, last_modified, about in pdf_files:
     filename = os.path.basename(full_path)
     dest_path = os.path.join(output_dir, filename)
     shutil.copy2(full_path, dest_path)  # PDFファイルをコピー
 
     title = os.path.splitext(filename)[0]
-    last_modified = datetime.datetime.fromtimestamp(date, datetime.timezone(datetime.timedelta(hours=9)))
 
     links.append(f"""\
             <a href="pdfjs/web/viewer.html?file=../../pdf_files/{filename}">
                 <article class="card">
                     <h3>{title}</h3>
-                    <p>最終更新: <time datetime="{last_modified.strftime("%Y-%m-%d")}">{last_modified.strftime("%y年%m月%d日")}</time></p><br>
+                    <p>最終更新: <time datetime="{last_modified}">{last_modified}</time></p><br>
                     <p>概要{f": {about.replace("\n\n", "<br>")}" if about else "はありません。"}</p>
                 </article>
             </a>""")
