@@ -1,3 +1,19 @@
+#import "/book.typ": book-page, media
+
+#show: book-page.with(title: "テンプレートを作成する")
+
+= テンプレート
+
+無設定ではページのテンプレートとして`/templates/page.typ`が使用されます。
+ただ、これは多くの人が使えるように作られているやつなので言語設定がenになってたりします。
+そのため自分用のテンプレートを作成したいと思うようになるでしょう。
+@shiroaの設定ファイル はこのサイトで使用している設定ファイルです。
+これは`shiroa init`した時にできる`templates/page.typ`の内容を自分用に修正したものです。
+
+あとこれは小ネタなのですが存在しないフォントを指定したときにエラーが出るやつ、あれ解消するとビルドがめっちゃ早くなるのでそれだけはやっといた方がいいです。#footnote([あれOSで切り替えられるようにして欲しい。でも#link("https://github.com/typst/typst/issues/4564")[パッケージみたいなのでフォントを入れられるような方向性で進もうとしているらしい]。TeXとかそうなんだっけ？何にせよあの警告は相当鬱陶しいので抑制できたらいいのにな])
+
+#figure(caption: [サイトで使用しているshiroaの設定ファイル],
+```typ
 #import "@preview/shiroa:0.1.2": get-page-width, target, is-web-target, is-pdf-target, plain-text, templates
 #import templates: *
 
@@ -23,7 +39,6 @@
 
 // フォント
 #let main-font = (
-  // sudo apt install fonts-noto-cjkで入るっぽい？
   "Noto Serif CJK JP",
   // "Charter",
   // "Source Han Serif SC",
@@ -101,7 +116,7 @@
   set block(spacing: 0.7em * 1.5)
 
   // 画像にはキャプション（alt）を必ずつける
-  //  ただし、24-12-29時点ではaltが反映されないようです
+  //  ただし、現時点では公開後のHTMLにaltが反映されていないようです
   show image: it => {
     return {
       if it.alt == none {
@@ -120,36 +135,14 @@
   // 引用はsist02形式で行う
   set bibliography(style: "sist02")
 
-  // 見出しにインデントをつける
-  set outline(indent: auto, fill: none) if is-web-target
-
-  // 脚注と本文の合間を.の繰り返しで表現
-  set footnote.entry(separator: repeat[.])
-
-  // 見出しのページ番号を無効化
-  //  ref: https://stackoverflow.com/questions/77031078/how-to-remove-numbers-from-outline
-  show outline.entry: it => {
-    if it.at("label", default: none) == <modified-entry> {
-      it // prevent infinite recursion
-    } else {
-      [#outline.entry(
-        it.level,
-        it.element,
-        text(fill: dash-color, it.body),
-        [],  // remove fill
-        []  // remove page number
-      ) <modified-entry>]
-    }
-  }
-
-  set heading(numbering: "1.")
   // 見出しの左側に#をつける。あとサイズを合わせる
-  show heading: set text(weight: "bold") if is-web-target
+  show heading: set text(weight: "regular") if is-web-target
+  set heading(numbering: "1.")
   show heading: it => {
     let it = {
       set text(size: heading-sizes.at(it.level))
       if is-web-target { 
-        place(left, dx: -20pt)[\#]
+        place(left, dx: -20pt)[#text(fill: dash-color, "#")]
       }
       it
     }
@@ -193,10 +186,6 @@
     }
   }
 
-  outline()
-
-  repeat([.])
-
   // Main body.
   set par(justify: true)
 
@@ -204,3 +193,6 @@
 }
 
 #let part-style = heading
+
+```
+) <shiroaの設定ファイル>
