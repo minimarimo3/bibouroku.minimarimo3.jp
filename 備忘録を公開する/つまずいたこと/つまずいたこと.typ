@@ -68,4 +68,4 @@ audio, videoで生じているように見えます。
 
 @noauthor_shiroa_nodate では各ページの`<head>`タグにメタ情報として追加されるものとして説明されていますが、実際は各ページの冒頭が自動で格納されているようです。
 
-#bibliography("つまずいたとこ.bib")
+#bibliography("out.bib")
