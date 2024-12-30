@@ -20,6 +20,14 @@ Rust知らんが勉強してそのうち直したい。
 使用可能な属性は厳密に定められています。
 使用不可能な属性をarrtibutesで指定した場合、その時点でそのmediaを破棄するようなので注意してください @noauthor_shiroaclisrcrendertypstrs_nodate 。
 
+許可されているタグは、iframe、div、audio、videoの4つです。
+idとclassはどのタグもサポートしています。
+タグ固有のattributes(属性)は下のようになっています。
+
+/ div: 無し
+/ audio, video: src, controls
+/ iframe: src, allowfullscreen, scrolling, framespacing, frameborder, border, width, height
+
 == 埋め込み直下にでかいスペースができる
 
 audio, videoで生じているように見えます。
@@ -67,5 +75,18 @@ audio, videoで生じているように見えます。
 ```
 
 @noauthor_shiroa_nodate では各ページの`<head>`タグにメタ情報として追加されるものとして説明されていますが、実際は各ページの冒頭が自動で格納されているようです。
+
+= その他
+
+== 日本語のbibファイルが認識されない？
+
+よく分かっていません。
+ローカルでは問題なかったのですがGitHub Actionsで実行すると @日本語bib のようになってしまいます。
+out.bibに名前を変えたら上手くいったけどコケる原因が想像もつかない。
+謎。
+
+#figure(caption: [`つまずいたとこ.bib`を見つけられていないっぽい],
+  image("日本語bib.png", alt: "bibが反映されていない")
+) <日本語bib>
 
 #bibliography("out.bib")
