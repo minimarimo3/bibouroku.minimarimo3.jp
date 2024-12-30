@@ -1,4 +1,4 @@
-#import "/book.typ": book-page, media, cross-link, heading-reference, TODO
+#import "/book.typ": book-page, media, cross-link, heading-reference
 
 #show: book-page.with(title: "躓いたこと")
 
@@ -12,15 +12,13 @@ Rust知らんが勉強してそのうち直したい。
 
 == `--allowrd-url-source`を設定していない
 
-初期状態ではmediaのsrcに埋め込めるのは`^(player.bilibili.com)$`に一致する*ドメイン*のみです。
-#TODO([ソース])
+初期状態ではmediaのsrcに埋め込めるのは`^(player.bilibili.com)$`に一致する*ドメイン*のみです @noauthor_shiroaclisrclibrs_nodate 。
 特別な理由がない限り`--allowed-url-source ".*"`して制限を解除した方がいいと思います。
 
 == 許可されていない属性を足している
 
 使用可能な属性は厳密に定められています。
-使用不可能な属性をarrtibutesで指定した場合、その時点でそのmediaを破棄するようなので注意してください。
-#TODO([ソース])
+使用不可能な属性をarrtibutesで指定した場合、その時点でそのmediaを破棄するようなので注意してください @noauthor_shiroaclisrcrendertypstrs_nodate 。
 
 == 埋め込み直下にでかいスペースができる
 
@@ -68,4 +66,6 @@ audio, videoで生じているように見えます。
 #book-meta(description: "サイトの説明",)
 ```
 
-#TODO([])では各ページの`<head>`タグにメタ情報として追加されるものとして説明されていますが、実際は各ページの冒頭が自動で格納されているようです。
+@noauthor_shiroa_nodate では各ページの`<head>`タグにメタ情報として追加されるものとして説明されていますが、実際は各ページの冒頭が自動で格納されているようです。
+
+#bibliography("つまずいたとこ.bib")
