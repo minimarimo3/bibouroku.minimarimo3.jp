@@ -27,7 +27,7 @@ jobs:
         run: |
           wget https://github.com/Myriad-Dreamin/shiroa/releases/latest/download/shiroa-x86_64-unknown-linux-gnu.tar.gz
           tar -xzf shiroa-x86_64-unknown-linux-gnu.tar.gz
-          sudo mv shiroa /usr/local/bin/
+          sudo mv shiroa-x86_64-unknown-linux-gnu/shiroa /usr/local/bin/
 
       - name: book.typ ファイルの検索と処理
         run: |
