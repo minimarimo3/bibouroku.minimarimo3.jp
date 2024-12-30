@@ -2,3 +2,4 @@
 **/dist/
 /.tmp*
 *.pdf
+!book.pdf  # PDFから更新日時を取得するために残す
