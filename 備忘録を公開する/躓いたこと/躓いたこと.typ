@@ -29,6 +29,26 @@ audio, videoで生じているように見えます。
 応急処置としては`outer-width`と`outer-height`をいい感じに設定するなどがあります。
 値を小さくしすぎるとプレイヤーの下にテキストが潜るので注意。
 
+== 埋め込んだコンテンツに対する操作ができない
+
+原因も解決方法もよく分かっていません。解決方法募集中です。
+一時的な対策として三つの方法を見つけました。
+
++ mediaの前後にpagebreakを挟む
+
+  linebreakやcolbreak、その他contextで囲ったりなんか色々しましたがpagebreakだけが有効でした。
+
+  注意点としてfigureやcolumnではpagebreakが使えないという点とfootnoteがbreak後に挿入されるというものがありますがそれらを使わないなら一番楽でいい選択だと思います。
+
++ ビルド後、適当なCSSで対象に```css position: absolute ; z-index: 2;```を適用（当サイトで採用）
+
+  attributesでclassを指定できるので適当なclassを付けて`dist/theme/css/general.css`の最後に書き込むようにしています。
+  書き込んだ内容はビルドするたびに消えることに注意
+
++ ビルド後、対象の一個、もしくは二個親のclassを`typst-html-semantics`にする
+
+  直そうとしている時に見つけました。うまくいく理由も分からないし変更もだるいのでお勧めしません。
+
 = HTMLに反映されていない
 
 == imageのalt

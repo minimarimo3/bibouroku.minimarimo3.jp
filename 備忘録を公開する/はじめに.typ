@@ -10,7 +10,7 @@
 
 #table(columns: 2,
   table.header("対象", "バージョン"),
-  "shiroa", "0.1.5(features: embedded_fonts)",
+  "shiroa", "shiroa version 0.2.0(features: embedded_fonts)",
   "Typst", "0.12.0",
 )
 

@@ -1,4 +1,4 @@
-#import "@preview/shiroa:0.1.2": get-page-width, target, is-web-target, is-pdf-target, plain-text, templates
+#import "@preview/shiroa:0.1.2": get-page-width, target, is-web-target, is-pdf-target, plain-text, templates, media
 #import templates: *
 
 #let TODOCounter = counter("minimarimo3:TODOCounter")
@@ -10,6 +10,27 @@
 #let page-width = get-page-width()
 #let is-pdf-target = is-pdf-target()
 #let is-web-target = is-web-target()
+
+#let embedYT = (url, orig_width: 560, orig_height: 315) => {
+  // 20ptはpageで設定したleftの値
+  let width = (page-width - 20pt)
+  let height = page-width * (orig_height / orig_width)
+
+  // 操作不能になるバグを避けるためにカスタムcssを適用する必要があります
+  //  .minimarimo3-embed-YT{position: absolute ; z-index: 2;}
+  media.iframe(
+    outer-width: width,
+    outer-height: height,
+    attributes: (
+      class: "minimarimo3-embed-YT",
+      src: url,
+      frameborder: "0",
+      allowfullscreen: "true",
+      width: width,
+      height: "100%"
+    )
+  )
+}
 
 // テーマ
 #let (
@@ -60,6 +81,7 @@
   // set web/pdf page properties
   set page(
     numbering: none,
+    // numbering: (..args) => {counter(page).update(none)},
     number-align: center,
     width: page-width,
   )

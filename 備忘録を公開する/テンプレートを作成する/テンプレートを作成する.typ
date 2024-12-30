@@ -1,4 +1,4 @@
-#import "/book.typ": book-page, media
+#import "/book.typ": book-page, embedYT, TODO
 
 #show: book-page.with(title: "テンプレートを作成する")
 
@@ -10,11 +10,17 @@
 @shiroaの設定ファイル はこのサイトで使用している設定ファイルです。
 これは`shiroa init`した時にできる`templates/page.typ`の内容を自分用に修正したものです。
 
-あとこれは小ネタなのですが存在しないフォントを指定したときにエラーが出るやつ、あれ解消するとビルドがめっちゃ早くなるのでそれだけはやっといた方がいいです。#footnote([あれOSで切り替えられるようにして欲しい。でも#link("https://github.com/typst/typst/issues/4564")[パッケージみたいなのでフォントを入れられるような方向性で進もうとしているらしい]。TeXとかそうなんだっけ？何にせよあの警告は相当鬱陶しいので抑制できたらいいのにな])
+あとこれは小ネタなのですが存在しないフォントを指定したときにエラーが出るやつ、あれ解消するとビルドがめっちゃ早くなるのでそれだけはやっといた方がいいです。#footnote([使用するフォントをOSで切り替えられたらいいのにと思って調べたら#link("https://github.com/typst/typst/issues/4564")[パッケージみたいなのでフォントを入れられるような方向性で進もうとしているらしい]。TeXとかそうなんだっけ？何にせよフォントの警告は避けられない癖に鬱陶しいので抑制できたらいいのにな])
+
+#TODO([TODOのテスト1])
+
+#embedYT("https://www.youtube.com/embed/YzuWMyd7Pjk?si=IVzCj73mCIs9AD1E")
+
+#TODO([TODOのテスト2])
 
 #figure(caption: [サイトで使用しているshiroaの設定ファイル],
 ```typ
-#import "@preview/shiroa:0.1.2": get-page-width, target, is-web-target, is-pdf-target, plain-text, templates
+#import "@preview/shiroa:0.1.2": get-page-width, target, is-web-target, is-pdf-target, plain-text, templates, media
 #import templates: *
 
 #let TODOCounter = counter("minimarimo3:TODOCounter")
@@ -26,6 +32,27 @@
 #let page-width = get-page-width()
 #let is-pdf-target = is-pdf-target()
 #let is-web-target = is-web-target()
+
+#let embedYT = (url, orig_width: 560, orig_height: 315) => {
+  // 20ptはpageで設定したleftの値
+  let width = (page-width - 20pt)
+  let height = page-width * (orig_height / orig_width)
+
+  // メディアを複数埋め込んだ際に操作不能になるバグを避けるためにカスタムcssを適用する必要があります
+  //  .minimarimo3-embed-YT{position: absolute ; z-index: 2;}
+  media.iframe(
+    outer-width: width,
+    outer-height: height,
+    attributes: (
+      class: "minimarimo3-embed-YT",
+      src: url,
+      frameborder: "0",
+      allowfullscreen: "true",
+      width: width,
+      height: "100%"
+    )
+  )
+}
 
 // テーマ
 #let (
@@ -39,6 +66,7 @@
 
 // フォント
 #let main-font = (
+  // sudo apt install fonts-noto-cjkで入るっぽい？
   "Noto Serif CJK JP",
   // "Charter",
   // "Source Han Serif SC",
@@ -75,6 +103,7 @@
   // set web/pdf page properties
   set page(
     numbering: none,
+    // numbering: (..args) => {counter(page).update(none)},
     number-align: center,
     width: page-width,
   )
@@ -116,7 +145,7 @@
   set block(spacing: 0.7em * 1.5)
 
   // 画像にはキャプション（alt）を必ずつける
-  //  ただし、現時点では公開後のHTMLにaltが反映されていないようです
+  //  ただし、24-12-29時点ではaltが反映されないようです
   show image: it => {
     return {
       if it.alt == none {
@@ -135,14 +164,36 @@
   // 引用はsist02形式で行う
   set bibliography(style: "sist02")
 
-  // 見出しの左側に#をつける。あとサイズを合わせる
-  show heading: set text(weight: "regular") if is-web-target
+  // 見出しにインデントをつける
+  set outline(indent: auto, fill: none) if is-web-target
+
+  // 脚注と本文の合間を.の繰り返しで表現
+  set footnote.entry(separator: repeat[.])
+
+  // 見出しのページ番号を無効化
+  //  ref: https://stackoverflow.com/questions/77031078/how-to-remove-numbers-from-outline
+  show outline.entry: it => {
+    if it.at("label", default: none) == <modified-entry> {
+      it // prevent infinite recursion
+    } else {
+      [#outline.entry(
+        it.level,
+        it.element,
+        text(fill: dash-color, it.body),
+        [],  // remove fill
+        []  // remove page number
+      ) <modified-entry>]
+    }
+  }
+
   set heading(numbering: "1.")
+  // 見出しの左側に#をつける。あとサイズを合わせる
+  show heading: set text(weight: "bold") if is-web-target
   show heading: it => {
     let it = {
       set text(size: heading-sizes.at(it.level))
       if is-web-target { 
-        place(left, dx: -20pt)[#text(fill: dash-color, "#")]
+        place(left, dx: -20pt)[\#]
       }
       it
     }
@@ -186,6 +237,10 @@
     }
   }
 
+  outline()
+
+  repeat([.])
+
   // Main body.
   set par(justify: true)
 
@@ -194,5 +249,4 @@
 
 #let part-style = heading
 
-```
-) <shiroaの設定ファイル>
+```) <shiroaの設定ファイル>
