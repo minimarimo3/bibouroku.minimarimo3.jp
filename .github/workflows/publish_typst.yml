@@ -31,14 +31,13 @@ jobs:
 
       - name: book.typ ファイルの検索と処理
         run: |
-          find . -name book.typ -execdir sh -c '
-            shiroa build --allowed-url-source ".*"
-            echo ".minimarimo3-embed-YT{position: absolute ; z-index: 2;}" >> dist/theme/css/general.css
-            parent_dir=$(basename $(dirname $(pwd)))
-            rm -rf "../public/"
-            mkdir -p "../public/$parent_dir"
-            mv dist "../public/$parent_dir"
-          ' sh {} \;
+          find . -name book.typ -execdir bash -c '
+            shiroa build --allowed-url-source ".*";
+            echo ".minimarimo3-embed-YT{position: absolute ; z-index: 2;}" >> dist/theme/css/general.css;
+            parent_dir=$(basename $(pwd))
+            mkdir -p "../public/$parent_dir";
+            mv dist/* "../public/$parent_dir/";
+          ' bash {} \;
 
       - name: GitHub Pages 用の設定
         run: |
