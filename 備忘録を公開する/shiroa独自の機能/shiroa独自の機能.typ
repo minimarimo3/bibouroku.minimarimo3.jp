@@ -1,4 +1,4 @@
-#import "/book.typ": book-page, media, cross-link, heading-reference, page-width, TODO
+#import "/book.typ": book-page, media, cross-link, heading-reference, page-width
 
 #show: book-page.with(title: "shiroa独自の機能")
 

@@ -1,8 +1,10 @@
-#import "/book.typ": book-page, media, cross-link, heading-reference, TODO
+#import "/book.typ": book-page, media, cross-link, heading-reference
 
 #show: book-page
 
 = 公開用コード
+
+このブログで使ってるコードからPythonの設定等を捨てたものです。
 
 ```yaml
 name: Deploy to GitHub Pages
