@@ -1,3 +1,10 @@
+#import "/book.typ": book-page, media, cross-link, heading-reference, TODO
+
+#show: book-page
+
+= 公開用コード
+
+```yaml
 name: Deploy to GitHub Pages
 
 on:
@@ -35,32 +42,11 @@ jobs:
             parent_dir=$(basename $(pwd))
             shiroa build --allowed-url-source ".*" --path-to-root "/$parent_dir/";
             echo ".minimarimo3-embed-YT{position: absolute ; z-index: 2;}" >> dist/theme/css/general.css;
-            rm -rf "../public/$parent_dir";
             mkdir -p "../public/$parent_dir";
             mv dist/* "../public/$parent_dir/";
           ' bash {} \;
 
-      - name: Pythonのセットアップ
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.13'
-
-      - name: pipキャッシュの設定
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
-      - name: PDFのメタデータを読むためのライブラリをインストール
-        run: |
-          pip install pypdf
-
-      - name: トップページ生成
-        run: python3 generator.py
-
-      - name: GitHub Pages用の設定
+      - name: GitHub Pages 用の設定
         run: |
           touch public/.nojekyll
 
@@ -76,3 +62,4 @@ jobs:
     steps:
     - name: Deploy to GitHub Pages
       uses: actions/deploy-pages@v4
+```
