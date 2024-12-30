@@ -19,7 +19,7 @@
     #chapter("Typstの諸機能表示テスト/Typstの諸機能表示テスト.typ", "Typstの諸機能表示テスト")
     #chapter("shiroa独自の機能/shiroa独自の機能.typ", "shiroa独自の機能")
     #chapter("テンプレートを作成する/テンプレートを作成する.typ", "テンプレートを作成する")
-    #chapter("躓いたこと/躓いたこと.typ", "躓いたこと")
+    #chapter("つまずいたこと/つまずいたこと.typ", "つまずいたこと")
 
     = GitHub Pagesで公開する
     #chapter("GitHub Pagesで公開する/GitHub Pagesで公開する.typ", "GitHub Pagesで公開する")
