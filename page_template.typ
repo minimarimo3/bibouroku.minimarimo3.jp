@@ -70,7 +70,7 @@
 /// The project function defines how your document looks.
 /// It takes your content and some metadata and formats it.
 /// Go ahead and customize it to your liking!
-#let project(title: "ﾐﾆﾏﾘﾓの備忘録", authors: ("minimarimo3"), kind: "page", body) = {
+#let project(last-modified, title: "ﾐﾆﾏﾘﾓの備忘録", authors: ("minimarimo3"), kind: "page", body) = {
 
   // set basic document metadata
   set document(
@@ -214,6 +214,8 @@
       it
     }
   }
+
+  text(10pt, last-modified.display("最終更新日: [year]年[month]月[day]日"))
 
   outline()
 
