@@ -1,7 +1,7 @@
 #import "/note.typ": 日報
 
 #show : 本文 => 日報(
-  執筆日: datetime(year: 2025, month: 12, day: 31),
+  執筆日: datetime(year: 2024, month: 12, day: 31),
   今日やったこと: [
 
   ],
