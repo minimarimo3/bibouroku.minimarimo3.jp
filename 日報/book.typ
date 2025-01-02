@@ -31,8 +31,8 @@
     #prefix-chapter(none, "日報")
 
     = 2025
-    #chapter(section: none, "25-01-01.typ", "25-01-01🎍")
     #n("25-01-02")
+    #chapter(section: none, "25-01-01.typ", "25-01-01🎍")
 
     = 2024
     #n("24-12-31")
