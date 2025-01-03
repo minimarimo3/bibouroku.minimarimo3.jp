@@ -1,3 +1,13 @@
+/*
+#import "../templates/page.typ": project, embedYT
+
+#show : project.with(
+  datetime(year: 2025, month: , day: ),
+  title: ""
+)
+*/
+
+
 #import "@preview/shiroa:0.1.2": get-page-width, target, is-web-target, is-pdf-target, plain-text, templates, media
 #import templates: *
 
