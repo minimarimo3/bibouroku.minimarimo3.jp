@@ -7,7 +7,7 @@
 == 他ファイルへのリンク
 
 ```typ
-// pathは絶対座標である必要がある
+// pathは絶対パスである必要があります。`/`から始める必要があるということです。
 #let path = "/Typstの諸機能表示テスト/Typstの諸機能表示テスト.typ"
 
 #cross-link(path)[これは"Typstの諸機能表示テスト"へ移動するリンク]
@@ -18,7 +18,7 @@ heading-referenceを使うためには`book.typ`の
 // re-export page template
 #import "/templates/page.typ": project
 
-のpage.typから`heading-reference`をimportする必要があるっぽい。↓みたいに
+のpage.typから`heading-reference`をimportする必要があります。具体的には↓みたいにしてください。
 
 #import "/templates/page.typ": project, heading-reference
 */
@@ -36,16 +36,15 @@ heading-referenceを使うためには`book.typ`の
 == media機能
 
 公式ドキュメントや下の使用例からも分かるように、コードを貼るだけでそのまま使えるような状態にはなっていないのであまり使わない方がいいかもしれません。
-あとコード読む限り埋め込み用のiframeに関しては無くすかどうか悩んでいるっぽい。
+あとコード読む限り埋め込み用のiframeに関しては無くすかどうか悩んでいるっぽいです。
 
-```typ #import "/book.typ": book-page, media```でmediaを入れる必要がある。
-あと埋め込みを許可しているドメインはデフォルト状態だと`^(player.bilibili.com)$`なのでビルド時に`--allowed-url-source ".*"`と設定して全部許した方がいいと思う。
-別に埋め込む予定のドメイン列挙してもいいよ。
-注意する点として、パラメーターはURLって言ってるけど実際にマッチさせるのはホスト部なので`"^(https://.*)$"`とか書くと何も出力されないってのがある。
+```typ #import "/book.typ": book-page, media```でmediaを入れる必要があります。
+あと埋め込みを許可しているドメインはデフォルト状態だと`^(player.bilibili.com)$`なのでビルド時に`--allowed-url-source ".*"`と設定して全部許した方がいいと思います。
+注意する点として、パラメーターはURLって言ってるけど実際にマッチさせるのはホスト部なので`"^(https://.*)$"`とか書くと何も出力されないってのがあります。
 
-バグとして、`media.*`が複数あるときに再生等の操作が一切できなくなるというものがあるっぽい。
-Issueにも無かったのでよく分からんがpagebreakを入れたら直った。
-多分同一ページに2つ以上`media.*`があるとダメ。
+バグとして、`media.*`が複数あるときに再生等の操作が一切できなくなるというものがあるっぽいです。
+Issueにも無かったのでよく分からんですがpagebreakを入れたら直りました。
+同一ページに2つ以上`media.*`があるか、埋め込みの上に何かしらのコンテンツがあるとダメっぽいです。
 
 === 音声
 
@@ -174,10 +173,10 @@ Issueにも無かったのでよく分からんがpagebreakを入れたら直っ
 
 div: divを作れるらしい。確認してない。
 
-xhtml, xcommand: Typst側のshiroaとの通信用。気にする必要はない。
+xhtml, xcommand: Typst側のshiroaとの通信用。気にする必要はないと思います。
 #footnote([
-  簡単な説明: 俺らが`media.iframe`や`media.video`は一旦SVG画像のコメントにJSONとして書き込まれる。
-  それを（Typstの拡張機能として実装されている方の）shiroaがTypst側で取り出し、JSONに応じて適切なHTMLを生成する。
-  そのJSONへの変更とSVGとしての埋め込みをやるのがxhtmlとxcommand。
-  なおJSON内のタグはshiroa拡張機能が検証しているので好き勝手埋め込める訳ではなさそう。
+  簡単な説明:`media.iframe`や`media.video`では属性(attributes)を指定できますが、これらはSVG画像内のコメントとしてJSON形式で記述されています。
+  これを、Typstの拡張機能として実装されているshiroaがTypst側で解析し、その内容に応じて適切なHTMLを生成します。
+  このJSONの編集とSVGへの埋め込みを行うのが、xhtmlとxcommandです。
+  なお、JSON内のタグはshiroa拡張機能によって検証されるため、自由に埋め込むことはできません。
 ])

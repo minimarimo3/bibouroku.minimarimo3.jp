@@ -10,13 +10,7 @@
 @shiroaの設定ファイル はこのサイトで使用している設定ファイルです。
 これは`shiroa init`した時にできる`templates/page.typ`の内容を自分用に修正したものです。
 
-あとこれは小ネタなのですが存在しないフォントを指定したときにエラーが出るやつ、あれ解消するとビルドがめっちゃ早くなるのでそれだけはやっといた方がいいです。#footnote([使用するフォントをOSで切り替えられたらいいのにと思って調べたら#link("https://github.com/typst/typst/issues/4564")[パッケージみたいなのでフォントを入れられるような方向性で進もうとしているらしい]。TeXとかそうなんだっけ？何にせよフォントの警告は避けられない癖に鬱陶しいので抑制できたらいいのにな])
-
-#TODO([TODOのテスト1])
-
-#embedYT("https://www.youtube.com/embed/YzuWMyd7Pjk?si=IVzCj73mCIs9AD1E")
-
-#TODO([TODOのテスト2])
+あとこれは小ネタなのですが存在しないフォントを指定したときにエラーが出るやつ、あれ解消するとビルドがめっちゃ早くなるのでそれだけはやっといた方がいいです。
 
 #figure(caption: [サイトで使用しているshiroaの設定ファイル],
 ```typ
@@ -66,16 +60,12 @@
 
 // フォント
 #let main-font = (
-  // sudo apt install fonts-noto-cjkで入るっぽい？
+  // sudo apt install fonts-noto-cjkで入る
   "Noto Serif CJK JP",
-  // "Charter",
-  // "Source Han Serif SC",
-  // "Source Han Serif TC",
   // shiroa's embedded font
   "Libertinus Serif",
 )
 #let code-font = (
-  // "BlexMono Nerd Font Mono",
   // shiroa's embedded font
   "DejaVu Sans Mono",
 )
@@ -103,7 +93,6 @@
   // set web/pdf page properties
   set page(
     numbering: none,
-    // numbering: (..args) => {counter(page).update(none)},
     number-align: center,
     width: page-width,
   )
@@ -250,3 +239,10 @@
 #let part-style = heading
 
 ```) <shiroaの設定ファイル>
+
+#TODO([これは`TODO`のテストです（1）])
+
+これは`embedYT`のテストです。
+#embedYT("https://www.youtube.com/embed/YzuWMyd7Pjk?si=IVzCj73mCIs9AD1E")
+
+#TODO([これは`TODO`のテストです（2）])
