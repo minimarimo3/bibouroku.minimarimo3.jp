@@ -43,26 +43,15 @@ jobs:
       - name: Pythonのセットアップ
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
-
-      - name: pipキャッシュの設定
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+          python-version: '3.12'  # https://github.com/actions/runner-images/issues/10636#:~:text=Python 3.13はキャッシュされていないため、3.12を使用
+          cache: 'pip'
 
       - name: PDFのメタデータを読むためのライブラリをインストール
         run: |
-          pip install pypdf
+          pip install pypdf==5.1.0  # 特にこのバージョンで困っていないので、キャッシュからの読み出しを確実にするためにバージョン指定
 
       - name: トップページ生成
         run: python3 generator.py
-
-      - name: GitHub Pages用の設定
-        run: |
-          touch public/.nojekyll
 
       - name: upload to GitHub Pages
         uses: actions/upload-pages-artifact@v3
