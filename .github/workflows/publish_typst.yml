@@ -46,10 +46,6 @@ jobs:
           python-version: '3.12'  # https://github.com/actions/runner-images/issues/10636#:~:text=Python 3.13はキャッシュされていないため、3.12を使用
           cache: 'pip'
 
-      - name: PDFのメタデータを読むためのライブラリをインストール
-        run: |
-          pip install pypdf==5.1.0  # 特にこのバージョンで困っていないので、キャッシュからの読み出しを確実にするためにバージョン指定
-
       - name: トップページ生成
         run: python3 generator.py
 
