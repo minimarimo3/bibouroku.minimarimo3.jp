@@ -34,7 +34,7 @@ jobs:
         run: |
           find . -name book.typ -execdir bash -c '
             parent_dir=$(basename $(pwd))
-            shiroa build --allowed-url-source ".*" --path-to-root "/$parent_dir/" 2>/dev/null;
+            shiroa build --allowed-url-source ".*" --path-to-root "/$parent_dir/";
             echo ".minimarimo3-embed-YT{position: absolute ; z-index: 2;}" >> dist/theme/css/general.css;
             rm -rf "../public/$parent_dir";
             mkdir -p "../public/$parent_dir";
