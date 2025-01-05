@@ -6,7 +6,6 @@
 
 Typstには色々な機能がありますが、それらがどこまでサポートされているのかを確認するためのページです。
 自分が使うであろう基本的な部分だけ書いているものであり、網羅を目的としていないことに注意してください。
-あとTypstコードはGitHubを見てください。
 
 = 確認用
 
@@ -21,36 +20,6 @@ Typstには色々な機能がありますが、それらがどこまでサポー
 ) <hogefugafigure>
 
 ああ#[@hogefugafigure]いい
-
-#import "@preview/codelst:2.0.0": sourcecode
-
-#figure(caption: [codelst版],
-  sourcecode(frame: block.with(fill: rgb(27, 27, 37, 0)))[```c
-    #include <stdio.h>
-
-    int main(void) {
-        printf("Hello, World!\n");
-        return 0;
-    }
-  ```]
-) <codelst>
-
-@codelst はcodelst使ったもの。
-
-#raw("
-#import \"@preview/codelst:2.0.0\": sourcecode
-
-#figure(caption: [codelst版],
-  sourcecode(frame: block.with(fill: rgb(27, 27, 37, 0)))[```c
-    #include <stdio.h>
-
-    int main(void) {
-        printf(\"Hello, World!\n\");
-        return 0;
-    }
-  ```]
-) <codelst>
-", lang: "typ")
 
 == 画像
 
