@@ -45,5 +45,5 @@
 
 
 // re-export page template
-#import "/templates/page.typ": project
+#import "/templates/page.typ": project, embedYT
 #let book-page = project
