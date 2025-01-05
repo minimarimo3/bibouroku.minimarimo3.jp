@@ -5,8 +5,7 @@
 
 #book-meta(
   language: "ja-JP",
-  // repository: "https://github.com/minimarimo3/bibouroku.minimarimo3.jp",
-  repository: "https://github.com/minimarimo3/bibouroku.minimarimo3.jp/blob/main/備忘録を公開する/{path}",
+  repository: "https://github.com/minimarimo3/bibouroku.minimarimo3.jp",
   repository-edit: "https://forms.gle/MktutcwRWKc4mBC58",
   title: "Typstで書いた備忘録を公開する",
   description: "何かやってます",
