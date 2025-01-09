@@ -61,6 +61,8 @@
 // フォント
 #let main-font = (
   // sudo apt install fonts-noto-cjkで入る
+  // 直接インストールしたいなら https://github.com/notofonts/noto-cjk/releases から 
+  //  `Language Specific OTFs Japanese (日本語)`がNoto Serif CJK JP
   "Noto Serif CJK JP",
   // shiroa's embedded font
   "Libertinus Serif",
