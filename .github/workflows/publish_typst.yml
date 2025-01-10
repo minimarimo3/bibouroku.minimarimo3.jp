@@ -33,6 +33,7 @@ jobs:
       - name: book.typ ファイルの検索と処理
         run: |
           find . -name book.typ -execdir bash -c '
+            set -eux
             parent_dir=$(basename $(pwd))
             shiroa build --allowed-url-source ".*" --path-to-root "/$parent_dir/";
             echo ".minimarimo3-embed-YT{position: absolute ; z-index: 2;}" >> dist/theme/css/general.css;
