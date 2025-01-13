@@ -2,7 +2,10 @@
 #import "/note.typ": 日報
 
 #show : 本文 => 日報(
-  執筆日: datetime(year: 2025, month: , day: ),
+  執筆日: datetime(year: 2025, month: 01, day: ),
+  今日やること: [
+
+  ],
   今日やったこと: [
 
   ],
@@ -21,8 +24,8 @@
 #show: book
 
 
-#let n = (date) => {
-  return chapter(section: none, str(date) + ".typ", date)
+#let n = (date, emoji: none) => {
+  return chapter(section: none, str(date) + ".typ", date + emoji)
 }
 
 #book-meta(
@@ -31,6 +34,8 @@
     #prefix-chapter(none, "日報")
 
     = 2025
+    #n("25-01-13")
+    #n("25-01-10", emoji: "⛄")
     #n("25-01-09")
     #n("25-01-08")
     #n("25-01-05")
