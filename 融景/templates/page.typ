@@ -131,6 +131,9 @@
   )
   set par(leading: 0.7em)
   set block(spacing: 0.7em * 1.5)
+  
+  // 引用をブロッククォートにする
+  set quote(block: true)
 
   // 画像にはキャプション（alt）を必ずつける
   //  ただし、24-12-29時点ではaltが反映されないようです
