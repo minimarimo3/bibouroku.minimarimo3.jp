@@ -12,6 +12,7 @@ HTML_TEMPLATE_1 = r"""
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="fediverse:creator" content="@minimarimo3@misskey.io">
+    <meta name="fediverse:creator" content="@minimarimo3@mivatter.com">
     <meta name="creator" content="minimarimo3">
     <title>ﾐﾆﾏﾘﾓの備忘録</title>
     <script src="header_footer_loader.js"></script>
