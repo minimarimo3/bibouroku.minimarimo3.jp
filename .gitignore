@@ -1,0 +1,7 @@
+/template.pdf
+**/dist/
+/.tmp*
+*.pdf
+# PDFから更新日時を取得するために残す
+!book.pdf
+ebook.typ

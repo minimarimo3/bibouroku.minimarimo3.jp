@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /日報/
+
+User-agent: *
+Allow: /
