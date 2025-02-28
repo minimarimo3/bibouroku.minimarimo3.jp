@@ -34,6 +34,7 @@
     #prefix-chapter(none, "日報")
 
     = 2025
+    #n("25-03-01", emoji:"📣")
   ]
 )
 
