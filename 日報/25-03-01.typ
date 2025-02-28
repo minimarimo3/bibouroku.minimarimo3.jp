@@ -6,7 +6,7 @@
     今日やること: [
         + 化物語について調べて1話を見てみる
         
-            #embedYT("https://youtu.be/Jj1_mfUzjOs?si=nDLcAHkdhFpt1he1")
+            #embedYT("https://www.youtube.com/embed/Jj1_mfUzjOs?si=xmPVndWr4vsWpgfW")
 
         + ANTLRのvisitorだかlistenerだか実装
     ],
