@@ -68,7 +68,8 @@ jobs:
           find . -name book.typ -execdir bash -c '
             set -eux
             parent_dir=$(basename $(pwd))
-            shiroa build --allowed-url-source ".*" --path-to-root "/$parent_dir/";
+            # mode=static-htmlはv0.3.0以降: https://github.com/Myriad-Dreamin/shiroa/releases/tag/v0.3.0#:~:text=Rendering%20pages%20into%20static%20html%20using%20HTML%20export%20with%20%2D%2Dmode%3Dstatic%2Dhtml
+            shiroa build --allowed-url-source ".*" --path-to-root "/$parent_dir/" --mode=static-html;
             echo ".minimarimo3-embed-YT{position: absolute ; z-index: 2;}" >> dist/theme/css/general.css;
             rm -rf "../public/$parent_dir";
             mkdir -p "../public/$parent_dir";
