@@ -146,7 +146,7 @@
   // set outline(indent: auto, fill: none) if is-web-target
   set outline(indent: auto) if is-web-target
   
-  show outline: set outline.entry(fill: none)
+  // show outline: set outline.entry(fill: none)
 
   // 脚注と本文の合間を.の繰り返しで表現
   set footnote.entry(separator: repeat[.])
