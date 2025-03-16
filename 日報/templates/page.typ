@@ -1,3 +1,12 @@
+/*
+#import "../templates/page.typ": project, embedYT
+
+#show : project.with(
+  datetime(year: 2025, month: , day: ),
+  title: ""
+)
+*/
+
 #import "@preview/shiroa:0.1.2": get-page-width, target, is-web-target, is-pdf-target, plain-text, templates, media
 #import templates: *
 
@@ -142,37 +151,26 @@
   // 引用はsist02形式で行う
   set bibliography(style: "sist02")
 
-  // 見出しにインデントをつける
-  // set outline(indent: auto, fill: none) if is-web-target
-  set outline(indent: auto) if is-web-target
-
-  // show outline: set outline.entry(fill: none)
 
   // 脚注と本文の合間を.の繰り返しで表現
   set footnote.entry(separator: repeat[.])
 
-  // 見出しのページ番号を無効化
-  //  ref: https://stackoverflow.com/questions/77031078/how-to-remove-numbers-from-outline
-  show outline.entry: it => {
-    if it.at("label", default: none) == <modified-entry> {
-      it // prevent infinite recursion
-    } else {
-      [#outline.entry(
-        it.level,
-        it.element,
-        text(fill: dash-color, it.body),
-        [],  // remove fill
-        []  // remove page number
-      ) <modified-entry>]
-    }
-  }
+  // 見出しにインデントをつける。ページ数とかは非表示
+  //  https://typst.app/docs/reference/model/outline/#:~:text=Building%20an%20outline%20entry%20from%20its%20parts
+  show outline.entry: it => link(
+    it.element.location(),
+    it.indented(it.prefix(), it.body()),
+  )
 
-  set heading(numbering: none)
+  set heading(numbering: "1.")
   // 見出しの左側に#をつける。あとサイズを合わせる
   show heading: set text(weight: "bold") if is-web-target
   show heading: it => {
     let it = {
       set text(size: heading-sizes.at(it.level))
+      if is-web-target { 
+        place(left, dx: -20pt)[\#]
+      }
       it
     }
 
@@ -215,7 +213,7 @@
     }
   }
 
-  // outline()
+  outline()
 
   repeat([.])
 
@@ -223,8 +221,6 @@
   set par(justify: true)
 
   body
-
-  repeat([.])
 }
 
 #let part-style = heading

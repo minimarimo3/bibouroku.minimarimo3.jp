@@ -142,34 +142,16 @@
   // 引用はsist02形式で行う
   set bibliography(style: "sist02")
 
-  // 見出しにインデントをつける
-  // set outline(indent: auto, fill: none) if is-web-target
-  // set outline(indent: auto) if is-web-target
-  
-  // show outline: set outline.entry(fill: none)
 
   // 脚注と本文の合間を.の繰り返しで表現
   set footnote.entry(separator: repeat[.])
 
-  set outline.entry(fill: none)
-
-  // 見出しのページ番号を無効化
-  //  ref: https://stackoverflow.com/questions/77031078/how-to-remove-numbers-from-outline
-  /*
-  show outline.entry: it => {
-    if it.at("label", default: none) == <modified-entry> {
-      it // prevent infinite recursion
-    } else {
-      [#outline.entry(
-        it.level,
-        it.element,
-        text(fill: dash-color, it.inner),
-        [],  // remove fill
-        []  // remove page number
-      ) <modified-entry>]
-    }
-  }
-  */
+  // 見出しにインデントをつける。ページ数とかは非表示
+  //  https://typst.app/docs/reference/model/outline/#:~:text=Building%20an%20outline%20entry%20from%20its%20parts
+  show outline.entry: it => link(
+    it.element.location(),
+    it.indented(it.prefix(), it.body()),
+  )
 
   set heading(numbering: "1.")
   // 見出しの左側に#をつける。あとサイズを合わせる
