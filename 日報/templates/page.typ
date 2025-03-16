@@ -213,7 +213,7 @@
     }
   }
 
-  outline()
+  // outline()
 
   repeat([.])
 
