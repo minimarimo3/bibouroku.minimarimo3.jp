@@ -2,7 +2,7 @@
 #import "/note.typ": 日報
 
 #show : 本文 => 日報(
-  執筆日: datetime(year: 2025, month: 01, day: ),
+  執筆日: datetime(year: 2025, month: 05, day: ),
   今日やること: [
 
   ],
@@ -34,8 +34,7 @@
     #prefix-chapter(none, "日報")
 
     = 2025
-    #n("25-03-16", emoji:"📣")
-    #n("25-03-17")
+    #n("25-05-18", emoji:"📣")
   ]
 )
 
