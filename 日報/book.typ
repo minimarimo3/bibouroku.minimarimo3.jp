@@ -19,7 +19,7 @@
 )
 */
 
-#import "@preview/shiroa:0.2.0": *
+#import "@preview/shiroa:0.2.3": *
 
 #show: book
 

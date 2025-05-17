@@ -7,7 +7,7 @@
 )
 */
 
-#import "@preview/shiroa:0.1.2": get-page-width, target, is-web-target, is-pdf-target, plain-text, templates, media
+#import "@preview/shiroa:0.2.3": get-page-width, target, is-web-target, is-pdf-target, plain-text, templates, media
 #import templates: *
 
 #let TODOCounter = counter("minimarimo3:TODOCounter")
