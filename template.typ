@@ -40,13 +40,14 @@
 ) = context {
   // PDF/HTML共通設定
   set document(title: title, author: authors)
-  set text(font: main-font, size: 12pt, lang: "ja")
   set heading(numbering: "1.")
-  
-  // 図表の設定
+  set text(lang: "ja")
   show figure.where(kind: table): set figure.caption(position: top)
   
   if target() == "paged" {
+    // Typst 0.14ではフォントやそのサイズは反映されない。
+    // ビルド時にwarningが出てうっとおしいのでここで設定する
+    set text(font: main-font, size: 12pt)
     body
     return
   }
@@ -125,6 +126,20 @@
             setTimeout(() => toast.classList.remove('show'), 3000);
           });
         }
+        document.addEventListener('DOMContentLoaded', () => {
+          document.querySelectorAll('.raw-html-embed').forEach(el => {
+            // data-html属性からHTMLコードを取り出す
+            const htmlContent = el.getAttribute('data-html');
+            if (htmlContent) {
+              // divタグ自体を、中身のHTMLコードで置き換える (outerHTML)
+              el.outerHTML = htmlContent;
+              
+              // 注: scriptタグを含む埋め込みコード(Twitterなど)の場合、
+              // 単純な置換ではスクリプトが実行されないことがあります。
+              // その場合は iframe 系の埋め込みコードを使うのが最も安全です。
+            }
+          });
+        });
       ",
       )
     })
@@ -277,65 +292,14 @@
   })
 }
 
-#let embed_youtube(iframe_code) = context {
-  // 正規表現で src="..." の中身（URL）を抽出
-  // YouTubeのコードはダブルクオート前提でマッチングさせます
-  let match = iframe_code.text.match(regex("src=\"([^\"]+)\""))
-  
-  if match != none {
-    let url = match.captures.first()
-    if target() == "paged" {
-      url
-      return
-    }
-    
-    // レスポンシブ用のラッパーdivとiframeを生成
-    html.div(class: "video-wrapper", {
-      html.elem("iframe", attrs: (
-        src: url,
-        title: "YouTube video player",
-        frameborder: "0",
-        allow: "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share",
-        referrerpolicy: "strict-origin-when-cross-origin",
-        allowfullscreen: "true",
-      ))
-    })
-  } else {
-    // マッチしなかった場合はエラーメッセージなどを表示（デバッグ用）
-    text(fill: red, "Error: Invalid YouTube embed code")
-  }
-}
 
-#let embed_misskey_note(note_id, host: "misskey.io") = context {
-  import "@preview/suiji:0.5.0": *
-  if target() == "paged" {
-    note_id
-    return
-  }
-  html.elem("iframe", attrs: (
-    src: "https://" + host + "/embed/notes/" + note_id,
-    loading: "lazy",
-    referrerpolicy: "strict-origin-when-cross-origin",
-    style: "border: none; width: 100%; max-width: 500px; height: 280px; color-scheme: light dark;",
-    data-misskey-embed-id: "v1_" + shuffle-f(gen-rng-f(2525), range(15)).at(1).map(it => str(it)).join(""),
+#let raw_html(content) = {
+  // HTML側で置換するためのプレースホルダーdivを作る
+  // data-html属性に生のコードを退避させておく
+  html.elem("div", attrs: (
+    class: "raw-html-embed",
+    "data-html": content.text
   ))
-  html.script(defer: true, src: "https://" + host + "embed.js")
-}
-
-#let embed_misskey_user_timeline(user_id, host: "misskey.io", max_height: 700) = context {
-  import "@preview/suiji:0.5.0": *
-  if target() == "paged" {
-    user_id
-    return
-  }
-  html.elem("iframe", attrs: (
-    src: "https://" + host + "/embed/user-timeline/" + user_id + "?maxHeight=700",
-    loading: "lazy",
-    referrerpolicy: "strict-origin-when-cross-origin",
-    style: "border: none; width: 100%; max-width: 500px; height: 300px; color-scheme: light dark;",
-    data-misskey-embed-id: "v1_" + shuffle-f(gen-rng-f(115115), range(15)).at(1).map(it => str(it)).join(""),
-  ))
-  html.script(defer: true, src: "https://" + host + "embed.js")
 }
 
 // --- 記事一覧ページ（トップページ）用テンプレート ---
@@ -349,9 +313,10 @@
 ) = context {
   // 文書設定
   set document(title: title, author: authors)
-  set text(font: main-font, size: 12pt, lang: "ja")
+  set text(lang: "ja")
   
   if target() == "paged" {
+    set text(font: main-font, size: 12pt, lang: "ja")
     body
     return
   }

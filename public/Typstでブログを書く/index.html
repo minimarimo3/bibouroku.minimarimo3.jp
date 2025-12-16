@@ -42,6 +42,20 @@ ${url}`;
             setTimeout(() => toast.classList.remove('show'), 3000);
           });
         }
+        document.addEventListener('DOMContentLoaded', () => {
+          document.querySelectorAll('.raw-html-embed').forEach(el => {
+            // data-html属性からHTMLコードを取り出す
+            const htmlContent = el.getAttribute('data-html');
+            if (htmlContent) {
+              // divタグ自体を、中身のHTMLコードで置き換える (outerHTML)
+              el.outerHTML = htmlContent;
+              
+              // 注: scriptタグを含む埋め込みコード(Twitterなど)の場合、
+              // 単純な置換ではスクリプトが実行されないことがあります。
+              // その場合は iframe 系の埋め込みコードを使うのが最も安全です。
+            }
+          });
+        });
       
     </script>
   </head>
