@@ -2,6 +2,9 @@
 #let main-font = ("Noto Serif JP", "Hiragino Mincho ProN", "serif")
 #let code-font = ("Fira Code", "Consolas", "monospace")
 
+#import "/posts.typ": post-data
+#import "@preview/suiji:0.5.0": *
+
 // 共通のラッパー関数
 #let _alert-box(kind, title, icon, body) = {
   html.div(class: "markdown-alert markdown-alert-" + kind, {
@@ -204,24 +207,63 @@
               html.div(class: "feedback-area", {
                 html.h3("ご意見・ご感想")
                 html.p("記事に関するご意見や誤字の報告などをお待ちしています。")
-                html.elem("button", 
+                html.elem(
+                  "button",
                   attrs: (
-                    class: "feedback-link", 
-                    onclick: "openFeedback('" + feedback_url + "', '" + feedback_entry_id + "')"
-                  ), 
-                  "Googleフォームで送る"
+                    class: "feedback-link",
+                    onclick: "openFeedback('" + feedback_url + "', '" + feedback_entry_id + "')",
+                  ),
+                  "Googleフォームで送る",
                 )
               })
             }
           })
           
-          // 関連記事エリア
-          if related_posts.len() > 0 {
+          let other-posts = post-data.pairs().filter(p => p.last().title != title)
+          if other-posts.len() > 0 {
+            // 関連記事エリア
             html.hr(class: "section-divider")
             
-            
             html.section(class: "related-posts", {
-              html.h2(class: "section-title", "関連記事")
+              html.h2(class: "section-title", "その他の記事")
+              // 記事タイトルをシードにしてシャッフル（リビルドしても結果が変わらないようにする）
+              let rng = gen-rng(int(title.clusters().map(str.to-unicode).map(str).join().slice(0, 14)))
+              let (_, indices) = shuffle-f(rng, range(other-posts.len()))
+              // 最大3件を取得
+              let picks = indices.slice(0, calc.min(3, indices.len())).map(i => other-posts.at(i))
+
+              html.div(class: "card-grid", {
+                for pair in picks {
+                  let (dir, post) = pair
+                  let url = "/" + dir + "/"
+
+                  html.a(class: "post-card", href: url, {
+                     html.div(class: "card-content", {
+                      if "create" in post { html.time(class: "card-date", post.create.display("[year repr:last_two]-[month]-[day]")) }
+                      html.h3(class: "card-title", post.title)
+                      if "description" in post { html.p(class: "card-desc", post.description) }
+                    })
+                  })
+                }
+              })
+              
+              /*
+              html.div(class: "card-grid", picks.map(pair => {
+                let (dir, post) = pair
+                let url = "/" + dir + "/" // 記事のディレクトリ名をURLにする
+                
+                html.a(class: "post-card", href: url, {
+                  html.div(class: "card-content", {
+                    if "create" in post {
+                      html.time(class: "card-date", post.create.display("[year repr:last_two]-[month]-[day]"))
+                    }
+                    html.h3(class: "card-title", post.title)
+                    if "description" in post { html.p(class: "card-desc", post.description) }
+                  })
+                })
+              }))
+              */
+              
               /*
               html.div(class: "card-grid", related_posts.map(post => {
                 html.a(class: "post-card", href: post.url, {
@@ -252,7 +294,7 @@
               html.strong(authors.first())
               html.p(
                 style: "font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5em;",
-                "Typstが好きです。", // 好きな自己紹介文に変更してください
+                "Typstが好きです。",
               )
             })
           })
