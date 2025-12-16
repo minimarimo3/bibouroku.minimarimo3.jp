@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>404 Not Found</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&amp;family=Noto+Serif+JP:wght@400;700&amp;display=swap">
+    <link rel="stylesheet" href="/style.css">
+    <meta name="description" content="お探しのページは見つかりませんでした。">
+    <meta property="og:title" content="404 Not Found">
+    <script>
+
+        function shareX() {
+          const url = encodeURIComponent(window.location.href);
+          const text = encodeURIComponent(document.title);
+          window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+        }
+        function shareMisskey() {
+          const url = encodeURIComponent(window.location.href);
+          const text = encodeURIComponent(document.title);
+          window.open(`https://misskey-hub.net/share/?text=${text}&url=${url}`, '_blank');
+        }
+        function openFeedback(url, entryId) {
+          const title = document.title;
+          // タイトルをURLエンコードしてパラメータに結合
+          const fullUrl = `${url}?usp=pp_url&${entryId}=${encodeURIComponent(title)}`;
+          window.open(fullUrl, '_blank');
+        }
+        function copyInfo() {
+          const title = document.title;
+          const desc = document.querySelector('meta[name="description"]')?.content || '';
+          const url = window.location.href;
+          const textToCopy = `${title}
+${desc}
+${url}`;
+          
+          navigator.clipboard.writeText(textToCopy).then(() => {
+            const toast = document.getElementById('copy-toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+          });
+        }
+      
+    </script>
+  </head>
+  <body>
+    <div class="site-container">
+      <main class="main-content">
+        <article>
+          <header class="article-header">
+            <p><a class="back-home-btn" href="/">← ホームに戻る</a></p>
+            <h1 class="article-title">404 Not Found</h1>
+            <div class="article-meta">
+              <div class="meta-dates"></div>
+            </div>
+          </header>
+          <div class="mobile-toc"><details><summary>目次を開く</summary><nav role="doc-toc"><ol style="list-style-type: none"><li><a href="#loc-1"><span class="prefix">1.</span> ページが見つかりません</a></li></ol></nav></details></div>
+          <div class="article-abstract">
+            <p><strong class="abstract-title">概要</strong></p>
+            <p>お探しのページは見つかりませんでした。</p>
+          </div>
+          <div class="article-body">
+            <h2 id="loc-1">1. ページが見つかりません</h2>
+            <p>お探しのページは移動または削除された可能性があります。</p>
+            <p><a href="/">トップページに戻る</a></p>
+          </div>
+        </article>
+        <section class="share-feedback-section">
+          <hr class="section-divider">
+          <div class="share-area">
+            <h3>この記事をシェアする</h3>
+            <div class="share-buttons"><button class="share-btn btn-x" onclick="shareX()">Xでポスト</button><button class="share-btn btn-misskey" onclick="shareMisskey()">Misskeyでノート</button><button class="share-btn btn-copy" onclick="copyInfo()">タイトルと概要をコピー</button></div>
+          </div>
+          <div class="feedback-area">
+            <h3>ご意見・ご感想</h3>
+            <p>記事に関するご意見や誤字の報告などをお待ちしています。</p>
+            <button class="feedback-link" onclick="openFeedback('https://docs.google.com/forms/d/e/1FAIpQLSdyN8Q-zohUmlOxASKnJjwSSgs-S0PkHZMXDg2Zh8GgSTgOkQ/viewform', 'entry.629693238')">Googleフォームで送る</button>
+          </div>
+        </section>
+      </main>
+      <aside class="sidebar">
+        <div class="sidebar-inner">
+          <div class="sidebar-widget toc-widget">
+            <h3 class="widget-title">目次</h3>
+            <nav role="doc-toc">
+              <ol style="list-style-type: none">
+                <li><a href="#loc-1"><span class="prefix">1.</span> ページが見つかりません</a></li>
+              </ol>
+            </nav>
+          </div>
+          <div class="sidebar-widget">
+            <h3 class="widget-title">Author</h3>
+            <p><strong>minimarimo3</strong></p>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5em;">Typstが好きです。</p>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,189 @@
+import subprocess
+import json
+import os
+import shutil
+import datetime
+from xml.sax.saxutils import escape
+
+# --- 設定 ---
+ROOT_DIR = "."
+POSTS_FILE = "posts.typ"
+METADATA_LABEL = "<post-list>"
+BASE_URL = "https://bibouroku.minimarimo3.jp"  # あなたのドメイン
+STYLE_CSS = "style.css"  # 共通CSSのファイル名
+
+# コピーする静的ファイルの拡張子（必要に応じて追加）
+STATIC_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".pdf", ".js"}
+
+def build():
+    print("🚀 ビルドを開始します...")
+    
+    # publicフォルダのリセット（必要ならコメントアウトを外す）
+    # if os.path.exists("public"):
+    #     shutil.rmtree("public")
+    os.makedirs("public", exist_ok=True)
+
+    # 1. 記事リストの取得
+    try:
+        result = subprocess.run(
+            ["typst", "query", POSTS_FILE, METADATA_LABEL],
+            capture_output=True,
+            text=True,
+            check=True,
+            encoding="utf-8"
+        )
+        data = json.loads(result.stdout)
+        posts_dict = data[0]["value"] if data else {}
+        print(f"📄 {len(posts_dict)} 件の記事が見つかりました。\n")
+    except Exception as e:
+        print(f"❌ エラー: 記事リストの取得に失敗しました。\n{e}")
+        return
+
+    # 記事リストを日付順にソート（新しい順）
+    # Typstのdatetimeオブジェクトは辞書として渡される場合があるのでパースする
+    sorted_posts = []
+    for dir_path, meta in posts_dict.items():
+        meta["dir_path"] = dir_path
+        # 日付のパース処理
+        create_date = meta.get("create")
+        if isinstance(create_date, dict):
+            # Typstの辞書形式 {"year": 2025, "month": 12, ...} をPythonのdatetimeに
+            meta["dt"] = datetime.datetime(
+                create_date.get("year", 1970),
+                create_date.get("month", 1),
+                create_date.get("day", 1)
+            )
+        else:
+            meta["dt"] = datetime.datetime.now() # 取得できない場合は現在時刻
+            
+        sorted_posts.append(meta)
+    
+    sorted_posts.sort(key=lambda x: x["dt"], reverse=True)
+
+
+    # 2. 各記事のビルド & 静的ファイルコピー
+    for post in sorted_posts:
+        dir_path = post["dir_path"]
+        title = post.get("title", "無題")
+        
+        # パス設定
+        input_dir = os.path.join(ROOT_DIR, dir_path)
+        input_file = os.path.join(input_dir, "index.typ")
+        output_dir = os.path.join("public", dir_path)
+        output_file = os.path.join(output_dir, "index.html")
+        
+        if not os.path.exists(input_file):
+            print(f"⚠️ スキップ: ファイルが見つかりません ({input_file})")
+            continue
+
+        os.makedirs(output_dir, exist_ok=True)
+        print(f"🔨 Compiling: {title}")
+
+        # (A) Typstコンパイル
+        try:
+            subprocess.run([
+                "typst", "compile", "--features", "html", "--format", "html",
+                "--root", ROOT_DIR, input_file, output_file
+            ], check=True)
+        except subprocess.CalledProcessError:
+            print(f"❌ コンパイル失敗: {title}")
+            continue
+
+        # (B) 静的ファイル（画像など）のコピー
+        # 記事ディレクトリ内のファイルを走査
+        for filename in os.listdir(input_dir):
+            base, ext = os.path.splitext(filename)
+            if ext.lower() in STATIC_EXTENSIONS:
+                src = os.path.join(input_dir, filename)
+                dst = os.path.join(output_dir, filename)
+                shutil.copy2(src, dst)
+                print(f"  Example: {filename} をコピーしました")
+
+    # 3. 共通ファイルのビルド・コピー
+    print("\n🏠 Building static pages...")
+    
+    # トップページ
+    try:
+        subprocess.run(["typst", "compile", "--features", "html", "--format", "html", "--root", ROOT_DIR, "index.typ", "public/index.html"], check=True)
+    except: print("❌ トップページのコンパイル失敗")
+
+    # 404ページ
+    if os.path.exists("404.typ"):
+        try:
+            subprocess.run(["typst", "compile", "--features", "html", "--format", "html", "--root", ROOT_DIR, "404.typ", "public/404.html"], check=True)
+            print("✅ 404ページ生成完了")
+        except: print("❌ 404ページのコンパイル失敗")
+
+    # CSSコピー
+    if os.path.exists(STYLE_CSS):
+        shutil.copy2(STYLE_CSS, "public/style.css")
+        print("✅ CSSコピー完了")
+    else:
+        print("⚠️ style.css がルートに見つかりません（public/style.cssとして既に存在するならOK）")
+
+
+    # 4. RSSフィード & サイトマップ生成
+    print("\n📡 Generating RSS & Sitemap...")
+    generate_rss(sorted_posts)
+    generate_sitemap(sorted_posts)
+    print("✅ ビルド完了！")
+
+
+def generate_rss(posts):
+    rss_path = os.path.join("public", "feed.xml")
+    now = datetime.datetime.now(datetime.timezone.utc).strftime("%a, %d %b %Y %H:%M:%S GMT")
+    
+    xml = f"""<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+<channel>
+  <title>Bibouroku</title>
+  <link>{BASE_URL}</link>
+  <description>Typstで作られた備忘録ブログ</description>
+  <lastBuildDate>{now}</lastBuildDate>
+"""
+    for post in posts:
+        title = escape(post.get("title", "No Title"))
+        link = f"{BASE_URL}/{post['dir_path']}/" # トレーリングスラッシュあり
+        desc = escape(post.get("description", ""))
+        # 日付フォーマット (RFC 822)
+        pub_date = post["dt"].strftime("%a, %d %b %Y 00:00:00 GMT")
+        
+        xml += f"""  <item>
+    <title>{title}</title>
+    <link>{link}</link>
+    <description>{desc}</description>
+    <pubDate>{pub_date}</pubDate>
+  </item>
+"""
+    xml += "</channel>\n</rss>"
+    
+    with open(rss_path, "w", encoding="utf-8") as f:
+        f.write(xml)
+
+def generate_sitemap(posts):
+    sitemap_path = os.path.join("public", "sitemap.xml")
+    
+    xml = f"""<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>{BASE_URL}/</loc>
+    <priority>1.0</priority>
+  </url>
+"""
+    for post in posts:
+        link = f"{BASE_URL}/{post['dir_path']}/"
+        last_mod = post["dt"].strftime("%Y-%m-%d")
+        
+        xml += f"""  <url>
+    <loc>{link}</loc>
+    <lastmod>{last_mod}</lastmod>
+    <priority>0.8</priority>
+  </url>
+"""
+    xml += "</urlset>"
+    
+    with open(sitemap_path, "w", encoding="utf-8") as f:
+        f.write(xml)
+
+if __name__ == "__main__":
+    build()

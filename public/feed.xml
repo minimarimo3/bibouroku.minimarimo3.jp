@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+<channel>
+  <title>Bibouroku</title>
+  <link>https://bibouroku.minimarimo3.jp</link>
+  <description>Typstで作られた備忘録ブログ</description>
+  <lastBuildDate>Tue, 16 Dec 2025 21:06:09 GMT</lastBuildDate>
+  <item>
+    <title>テスト</title>
+    <link>https://bibouroku.minimarimo3.jp/テスト/</link>
+    <description>サイトの表示テスト</description>
+    <pubDate>Wed, 17 Dec 2025 00:00:00 GMT</pubDate>
+  </item>
+  <item>
+    <title>Typstでブログを書く</title>
+    <link>https://bibouroku.minimarimo3.jp/Typstでブログを書く/</link>
+    <description>Typst v0.14の新機能を使って、Typstだけでブログシステムを構築する試み。</description>
+    <pubDate>Wed, 17 Dec 2025 00:00:00 GMT</pubDate>
+  </item>
+</channel>
+</rss>
