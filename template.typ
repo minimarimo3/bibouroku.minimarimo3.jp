@@ -231,50 +231,23 @@
               let (_, indices) = shuffle-f(rng, range(other-posts.len()))
               // 最大3件を取得
               let picks = indices.slice(0, calc.min(3, indices.len())).map(i => other-posts.at(i))
-
+              
               html.div(class: "card-grid", {
                 for pair in picks {
                   let (dir, post) = pair
                   let url = "/" + dir + "/"
-
+                  
                   html.a(class: "post-card", href: url, {
-                     html.div(class: "card-content", {
-                      if "create" in post { html.time(class: "card-date", post.create.display("[year repr:last_two]-[month]-[day]")) }
+                    html.div(class: "card-content", {
+                      if "create" in post {
+                        html.time(class: "card-date", post.create.display("[year repr:last_two]-[month]-[day]"))
+                      }
                       html.h3(class: "card-title", post.title)
                       if "description" in post { html.p(class: "card-desc", post.description) }
                     })
                   })
                 }
               })
-              
-              /*
-              html.div(class: "card-grid", picks.map(pair => {
-                let (dir, post) = pair
-                let url = "/" + dir + "/" // 記事のディレクトリ名をURLにする
-                
-                html.a(class: "post-card", href: url, {
-                  html.div(class: "card-content", {
-                    if "create" in post {
-                      html.time(class: "card-date", post.create.display("[year repr:last_two]-[month]-[day]"))
-                    }
-                    html.h3(class: "card-title", post.title)
-                    if "description" in post { html.p(class: "card-desc", post.description) }
-                  })
-                })
-              }))
-              */
-              
-              /*
-              html.div(class: "card-grid", related_posts.map(post => {
-                html.a(class: "post-card", href: post.url, {
-                  html.div(class: "card-content", {
-                    if "date" in post { html.time(class: "card-date", post.date) }
-                    html.h3(class: "card-title", post.title)
-                    if "description" in post { html.p(class: "card-desc", post.description) }
-                  })
-                })
-              }))
-              */
             })
           }
         })
@@ -344,7 +317,7 @@
     loading: "lazy",
     referrerpolicy: "strict-origin-when-cross-origin",
     style: "border: none; width: 100%; max-width: 500px; height: 280px; color-scheme: light dark;",
-    data-misskey-embed-id: "v1_" + shuffle-f(gen-rng-f(2525), range(10000)).at(1).map(it => str(it)).join(""),
+    data-misskey-embed-id: "v1_" + shuffle-f(gen-rng-f(2525), range(15)).at(1).map(it => str(it)).join(""),
   ))
   html.script(defer: true, src: "https://" + host + "embed.js")
 }
