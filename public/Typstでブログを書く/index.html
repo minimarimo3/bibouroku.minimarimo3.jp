@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="/style.css">
     <meta name="description" content="Typst v0.14の新機能を使って、Typstだけでブログシステムを構築する試み。">
     <meta property="og:title" content="Typstでブログを書く">
+    <div class="raw-html-embed" data-html="<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{&quot;token&quot;: &quot;4b32234cfe9741ea8a4437f109f7b029&quot;}'></script><!-- End Cloudflare Web Analytics -->"></div>
     <script>
 
         function shareX() {
@@ -71,42 +72,70 @@ ${url}`;
               <div class="meta-tags"><span class="tag">#Typst</span><span class="tag">#HTML</span></div>
             </div>
           </header>
-          <div class="mobile-toc"><details><summary>目次を開く</summary><nav role="doc-toc"><ol style="list-style-type: none"><li><a href="#loc-1"><span class="prefix">1.</span> はじめに</a></li><li><div><a href="#loc-2"><span class="prefix">2.</span> 実装</a></div><ol style="list-style-type: none"><li><a href="#loc-3"><span class="prefix">2.1.</span> Typstのテンプレートを作成する</a></li><li><a href="#loc-4"><span class="prefix">2.2.</span> Zoteroのエクスポート形式にHayagrivaを追加、キーをWebサイトメインに修正</a></li><li><a href="#loc-5"><span class="prefix">2.3.</span> GitHub Actionsを作成しGitHub Pagesで公開する</a></li></ol></li><li><div><a href="#loc-6"><span class="prefix">3.</span> 詰まった点・落とし穴</a></div><ol style="list-style-type: none"><li><a href="#loc-7"><span class="prefix">3.1.</span> 数式のエクスポートが未実装</a></li><li><a href="#loc-9"><span class="prefix">3.2.</span> htmlを一から構築する場合footnoteが使用できない</a></li></ol></li><li><a href="#loc-10">参考文献</a></li></ol></nav></details></div>
+          <div class="mobile-toc"><details><summary>目次を開く</summary><nav role="doc-toc"><ol style="list-style-type: none"><li><a href="#はじめに"><span class="prefix">1.</span> はじめに</a></li><li><div><a href="#loc-1"><span class="prefix">2.</span> 実装</a></div><ol style="list-style-type: none"><li><a href="#loc-2"><span class="prefix">2.1.</span> Typstのテンプレートを作成する</a></li><li><a href="#loc-3"><span class="prefix">2.2.</span> Zoteroのエクスポート形式にHayagrivaを追加、キーをWebサイトメインに修正</a></li><li><a href="#loc-4"><span class="prefix">2.3.</span> サイトのアクセス解析を行う</a></li><li><a href="#loc-5"><span class="prefix">2.4.</span> 検索をサポートする</a></li><li><a href="#loc-6"><span class="prefix">2.5.</span> GitHub Actionsを作成しGitHub Pagesで公開する</a></li></ol></li><li><div><a href="#loc-7"><span class="prefix">3.</span> 詰まった点・落とし穴</a></div><ol style="list-style-type: none"><li><a href="#loc-8"><span class="prefix">3.1.</span> 数式のエクスポートが未実装</a></li><li><a href="#loc-10"><span class="prefix">3.2.</span> htmlを一から構築する場合footnoteが使用できない</a></li></ol></li><li><a href="#loc-11">参考文献</a></li></ol></nav></details></div>
           <div class="article-abstract">
             <p><strong class="abstract-title">概要</strong></p>
             <p>Typst v0.14の新機能を使って、Typstだけでブログシステムを構築する試み。</p>
           </div>
           <div class="article-body">
-            <div class="markdown-alert markdown-alert-tip">
-              <p class="markdown-alert-title"><span class="markdown-alert-icon">💡</span>ヒント</p>
+            <div class="markdown-alert markdown-alert-note">
+              <p class="markdown-alert-title"><span class="markdown-alert-icon">ℹ️</span>補足</p>
               <div class="markdown-alert-content">この記事は<a href="https://qiita.com/advent-calendar/2025/typst">Typst Advent Calender 2025</a>のTODO日目の記事です。</div>
             </div>
-            <h2 id="loc-1">1. はじめに</h2>
+            <h2>執筆環境</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>ソフト名</th>
+                  <th>バージョン</th>
+                  <th>補足</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Typst</td>
+                  <td>0.14</td>
+                  <td>TYPST_FEATURES=html</td>
+                </tr>
+                <tr>
+                  <td>Tinymist Typst</td>
+                  <td>0.14.4</td>
+                  <td>—</td>
+                </tr>
+              </tbody>
+            </table>
+            <h2 id="はじめに">1. はじめに</h2>
             <p>Typst、とてもいいですよね。 Markdownのような書き心地でfigureやfootnoteや参考文献への参照等が書けるためとても気に入っています。 そのTypstですがバージョン0.13でHTMLエクスポート機能が実験的に実装され、バージョン0.14では（依然として発展途上の機能ではあるものの）その機能が大幅に強化され、変換対象の関数も増えた上に、<code>html.elem</code>を使うことで直接HTMLタグを記述できるようになりました。</p>
             <p>そこで今ならTypstでブログ作れるんじゃねぇかと考えたのです。 作ったのがこのブログです。</p>
             <p>TypstでHTMLを生成しCSSで色付けるだけなので技術的に難しいことはないのですがいくつか落とし穴があるのと、HTMLエクスポートを実際に使用してみた内容の日本語の記事がみあたらなかったので記事を残すことにしました。</p>
-            <h2 id="loc-2">2. 実装</h2>
-            <h3 id="loc-3">2.1. Typstのテンプレートを作成する</h3>
-            <p>文書を単純にHTMLエクスポートするなら普通に<code>typst compile --features html --format html input.typ</code>すればよいのですが、この方法でコンパイルするとTypstの内容はすべてbody内に記述されます。 そのため、headなどにいろいろ記述する場合は<code>html.html</code>を使用してエクスポートするHTMLの構造を一から記述する必要があります。 このモードはカスタムHTMLモードと言うそうです。</p>
+            <p>一応色々WTFPLで公開しているものの、個人用に作ったものであるため他人が使うことを想定していません。 現時点でもここまでできるんだよということを紹介するためのものとして受け取ってもらいたいです。</p>
+            <p>TypstのHTMLエクスポート機能はデフォルトだと有効化されていないためTinymistで<code>html.hogehoge</code>を使うと<code>html</code>なんてねぇよというエラーが出てしまいます。 <code>TYPST_FEATURES</code>変数にhtmlを設定してVSCodeを再起動することによって拡張機能にhtml機能を認識させることができます。</p>
+            <h2 id="loc-1">2. 実装</h2>
+            <h3 id="loc-2">2.1. Typstのテンプレートを作成する</h3>
+            <p>文書をHTMLエクスポートするだけなら<code>typst compile --features html --format html input.typ</code>すればよいのですが、この方法でコンパイルすると、styleやmetaであってもbody内に記述されてしまいます。 headに記述したい内容がある場合は<code>html.html</code>を使用してエクスポートするHTMLの構造を一から記述する必要があるみたいです。</p>
             <p>また、0.14時点ではalign等のレイアウト系命令がエクスポート時に無視されるため、そのあたりはCSSを使用して実装する必要があります。</p>
-            <h3 id="loc-4">2.2. Zoteroのエクスポート形式にHayagrivaを追加、キーをWebサイトメインに修正</h3>
+            <h3 id="loc-3">2.2. Zoteroのエクスポート形式にHayagrivaを追加、キーをWebサイトメインに修正</h3>
             <p>まずTypstの<code>bibliography</code>はBibLaTeXとHayagrivaの二つの形式をロード可能です。 HayagrivaというのはTypstが開発している文献管理用の形式でYAMLを使用しています。</p>
-            <p>ZoteroのエクスポートはHayagriva（Typstが開発しているbibliographyの管理用形式）に対応していない。</p>
-            <p>作成しましょう。Web用にカスタマイズしてあります。</p>
-            <h3 id="loc-5">2.3. GitHub Actionsを作成しGitHub Pagesで公開する</h3>
+            <p>単にブログを書くだけなら文献リストはYAMLの方が取り回しがよいでしょう。 しかし、ZoteroのエクスポートはHayagriva（Typstが開発しているbibliographyの管理用形式）に対応していません。 というわけで作成したのがこちらです。</p>
+            <p>論文を書くことはないのでWeb用にカスタマイズしてあります。</p>
+            <h3 id="loc-4">2.3. サイトのアクセス解析を行う</h3>
+            <p>アクセス解析に使えるのは色々ありますが 簡単に使えて同意を求めるプロンプトとか必要ないCloudflare Web Analyticsを採用します。</p>
+            <h3 id="loc-5">2.4. 検索をサポートする</h3>
+            <p>PageFindを使用して検索をサポートします。</p>
+            <h3 id="loc-6">2.5. GitHub Actionsを作成しGitHub Pagesで公開する</h3>
             <p><code>typst compile --features html --format html --root . (ディレクトリ)/index.typ public/(ディレクトリ)/index.html</code></p>
             <p>でおｋ！</p>
-            <h2 id="loc-6">3. 詰まった点・落とし穴</h2>
-            <h3 id="loc-7">3.1. 数式のエクスポートが未実装</h3>
-            <p>現時点では数式のエクスポートが未実装です。 しかし、数式をSVG画像に変換してHTMLに埋め込むことができます。 <a id="loc-8" href="#loc-11" role="doc-biblioref">[1]</a></p>
+            <h2 id="loc-7">3. 詰まった点・落とし穴</h2>
+            <h3 id="loc-8">3.1. 数式のエクスポートが未実装</h3>
+            <p>現時点では数式のエクスポートが未実装です。 しかし、数式をSVG画像に変換してHTMLに埋め込むことができます。 <a id="loc-9" href="#loc-12" role="doc-biblioref">[1]</a></p>
             <pre><code data-lang="typc"><span style="color: #d73948">show</span> math.equation.<span style="color: #4b69c6">where</span>(block: <span style="color: #d73948">false</span>): it <span style="color: #d73948">=></span> {<br>  html.<span style="color: #4b69c6">elem</span>(<span style="color: #198810">"span"</span>, attrs: (role: <span style="color: #198810">"math"</span>), html.<span style="color: #4b69c6">frame</span>(it))<br>}<br><span style="color: #d73948">show</span> math.equation.<span style="color: #4b69c6">where</span>(block: <span style="color: #d73948">true</span>): it <span style="color: #d73948">=></span> {<br>  html.<span style="color: #4b69c6">elem</span>(<span style="color: #198810">"figure"</span>, attrs: (role: <span style="color: #198810">"math"</span>), html.<span style="color: #4b69c6">frame</span>(it))<br>}</code></pre>
-            <h3 id="loc-9">3.2. htmlを一から構築する場合footnoteが使用できない</h3>
+            <h3 id="loc-10">3.2. htmlを一から構築する場合footnoteが使用できない</h3>
             <p><code>html.html</code>でファイルを生成する場合、footnoteを使用するとエラーが出ます。 幸いcounterは使えるので自分で実装することで対処できます。</p>
             <pre><code data-lang="typc"><span style="color: #d73948">let</span> note-counter <span style="color: #d73948">=</span> <span style="color: #4b69c6">counter</span>(<span style="color: #198810">"my-footnote"</span>)<br><span style="color: #d73948">show</span> <span style="color: #4b69c6">footnote</span>: it <span style="color: #d73948">=></span> {<br>  note-counter.<span style="color: #4b69c6">step</span>()<br>  <span style="color: #d73948">let</span> num <span style="color: #d73948">=</span> note-counter.<span style="color: #4b69c6">get</span>().<span style="color: #4b69c6">first</span>()<br>  html.<span style="color: #4b69c6">span</span>(class: <span style="color: #198810">"footnote-wrapper"</span>, {<br>    html.<span style="color: #4b69c6">span</span>(class: <span style="color: #198810">"footnote-marker"</span>, <span style="color: #198810">"["</span> <span style="color: #d73948">+</span> <span style="color: #4b69c6">str</span>(num) <span style="color: #d73948">+</span> <span style="color: #198810">"]"</span>)<br>    html.<span style="color: #4b69c6">span</span>(class: <span style="color: #198810">"footnote-content"</span>, it.body)<br>  })<br>}</code></pre>
             <section role="doc-bibliography">
-              <h2 id="loc-10">参考文献</h2>
+              <h2 id="loc-11">参考文献</h2>
               <ul style="list-style-type: none">
-                <li id="loc-11"><span class="prefix"><a href="#loc-8" role="doc-backlink">[1]</a></span> 「HTML Export · Issue #721 · typst/typst」. [Online]. 入手先: <a href="https://github.com/typst/typst/issues/721#issuecomment-2817289426">https://github.com/typst/typst/issues/721#issuecomment-2817289426</a></li>
+                <li id="loc-12"><span class="prefix"><a href="#loc-9" role="doc-backlink">[1]</a></span> 「HTML Export · Issue #721 · typst/typst」. [Online]. 入手先: <a href="https://github.com/typst/typst/issues/721#issuecomment-2817289426">https://github.com/typst/typst/issues/721#issuecomment-2817289426</a></li>
               </ul>
             </section>
           </div>
@@ -135,23 +164,25 @@ ${url}`;
             <h3 class="widget-title">目次</h3>
             <nav role="doc-toc">
               <ol style="list-style-type: none">
-                <li><a href="#loc-1"><span class="prefix">1.</span> はじめに</a></li>
+                <li><a href="#はじめに"><span class="prefix">1.</span> はじめに</a></li>
                 <li>
-                  <div><a href="#loc-2"><span class="prefix">2.</span> 実装</a></div>
+                  <div><a href="#loc-1"><span class="prefix">2.</span> 実装</a></div>
                   <ol style="list-style-type: none">
-                    <li><a href="#loc-3"><span class="prefix">2.1.</span> Typstのテンプレートを作成する</a></li>
-                    <li><a href="#loc-4"><span class="prefix">2.2.</span> Zoteroのエクスポート形式にHayagrivaを追加、キーをWebサイトメインに修正</a></li>
-                    <li><a href="#loc-5"><span class="prefix">2.3.</span> GitHub Actionsを作成しGitHub Pagesで公開する</a></li>
+                    <li><a href="#loc-2"><span class="prefix">2.1.</span> Typstのテンプレートを作成する</a></li>
+                    <li><a href="#loc-3"><span class="prefix">2.2.</span> Zoteroのエクスポート形式にHayagrivaを追加、キーをWebサイトメインに修正</a></li>
+                    <li><a href="#loc-4"><span class="prefix">2.3.</span> サイトのアクセス解析を行う</a></li>
+                    <li><a href="#loc-5"><span class="prefix">2.4.</span> 検索をサポートする</a></li>
+                    <li><a href="#loc-6"><span class="prefix">2.5.</span> GitHub Actionsを作成しGitHub Pagesで公開する</a></li>
                   </ol>
                 </li>
                 <li>
-                  <div><a href="#loc-6"><span class="prefix">3.</span> 詰まった点・落とし穴</a></div>
+                  <div><a href="#loc-7"><span class="prefix">3.</span> 詰まった点・落とし穴</a></div>
                   <ol style="list-style-type: none">
-                    <li><a href="#loc-7"><span class="prefix">3.1.</span> 数式のエクスポートが未実装</a></li>
-                    <li><a href="#loc-9"><span class="prefix">3.2.</span> htmlを一から構築する場合footnoteが使用できない</a></li>
+                    <li><a href="#loc-8"><span class="prefix">3.1.</span> 数式のエクスポートが未実装</a></li>
+                    <li><a href="#loc-10"><span class="prefix">3.2.</span> htmlを一から構築する場合footnoteが使用できない</a></li>
                   </ol>
                 </li>
-                <li><a href="#loc-10">参考文献</a></li>
+                <li><a href="#loc-11">参考文献</a></li>
               </ol>
             </nav>
           </div>

@@ -1,3 +1,10 @@
+/*
+#import "../template.typ": project, note, note, tip, important, warning, caution, env
+#import "../posts.typ": post-data
+#let meta = post-data.at("")
+#show: project.with(..meta)
+*/
+
 // フォントは0.14時点ではHTMLだと反映されません。
 #let main-font = ("Noto Serif JP", "Hiragino Mincho ProN", "serif")
 #let code-font = ("Fira Code", "Consolas", "monospace")
@@ -5,8 +12,47 @@
 #import "/posts.typ": post-data
 #import "@preview/suiji:0.5.0": *
 
+// 引数のHTMLをJSで直接埋め込む関数
+//  サイトの埋め込み(iframe)とかで使うと便利
+#let raw_html(content) = {
+  // HTML側で置換するためのプレースホルダーdivを作る
+  // data-html属性に生のコードを退避させておく
+  html.elem("div", attrs: (
+    class: "raw-html-embed",
+    "data-html": content.text
+  ))
+}
+
+// 執筆時の環境を簡単に書くためのもの。
+//  (ソフト名, バージョン, 補足（任意）)を受け付ける
+#let env(..items) = context {
+  heading(outlined: false, numbering: none)[執筆環境]
+  
+  table(
+    columns: (auto, auto, 1fr),
+    inset: 8pt,
+    align: horizon,
+    stroke: (x, y) => if y == 0 { (bottom: 1pt + black) } else { (bottom: 0.5pt + gray) },
+    
+    table.header([ソフト名], [バージョン], [補足]),
+    
+    ..items
+      .pos()
+      .map(item => (
+        item.at(0),
+        item.at(1),
+        item.at(2, default: [---]),
+      ))
+      .flatten(),
+  )
+}
+
+
 // 共通のラッパー関数
-#let _alert-box(kind, title, icon, body) = {
+#let _alert-box(kind, title, icon, body) = context {
+  if target() == "paged" {
+    return icon + " " + title + ": " + body;
+  }
   html.div(class: "markdown-alert markdown-alert-" + kind, {
     html.p(class: "markdown-alert-title", {
       html.span(class: "markdown-alert-icon", icon)
@@ -95,6 +141,7 @@
         html.meta(name: "description", content: description)
       }
       html.elem("meta", attrs: (property: "og:title", content: title))
+      raw_html(`<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "4b32234cfe9741ea8a4437f109f7b029"}'></script><!-- End Cloudflare Web Analytics -->`)
       
       html.script(
         "
@@ -293,14 +340,6 @@
 }
 
 
-#let raw_html(content) = {
-  // HTML側で置換するためのプレースホルダーdivを作る
-  // data-html属性に生のコードを退避させておく
-  html.elem("div", attrs: (
-    class: "raw-html-embed",
-    "data-html": content.text
-  ))
-}
 
 // --- 記事一覧ページ（トップページ）用テンプレート ---
 #let home(
@@ -418,7 +457,11 @@
               html.h3(class: "widget-title", "本ブログについて")
               html.p(
                 style: "font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5em;",
-                [本サイトの内容は#link("https://www.wtfpl.net")[WTFPL]で公開されています。サイトに関するご意見は#link("https://forms.gle/hhLGvUeWKyNK1UUz6")[Googleフォーム]までお願いします。],
+                [
+                  本サイトの内容は#link("https://www.wtfpl.net")[WTFPL]で公開されています。
+                  また、アクセス解析のために「#link("https://www.cloudflare.com/ja-jp/web-analytics/")[Cloudflare Web Analytics]を使用しています。このツールはCookieを使用せず、個人を特定する情報は収集されません。
+                  サイトに関するご意見は#link("https://forms.gle/hhLGvUeWKyNK1UUz6")[Googleフォーム]までお願いします。
+                ],
               )
             })
           })

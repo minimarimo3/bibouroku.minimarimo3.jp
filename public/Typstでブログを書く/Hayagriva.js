@@ -2,7 +2,7 @@
 	"translatorID": "b54cfab6-ed62-4737-b0e2-7dc4e7348a8e",
 	"label": "Hayagriva(Web)",
 	"creator": "minimarimo3",
-	"target": "yml",
+	"target": "yaml",
 	"minVersion": "5.0",
 	"maxVersion": "",
 	"priority": 100,
