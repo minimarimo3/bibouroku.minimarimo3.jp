@@ -83,14 +83,15 @@
   related_posts: (),
   ..args,
   body,
-) = {
+) = context {
   // PDF/HTML共通設定
   set document(title: title, author: authors)
   set heading(numbering: "1.")
   set text(lang: "ja")
   show figure.where(kind: table): set figure.caption(position: top)
+  show figure.where(kind: raw): set figure(supplement: "コード")
   
-  if {context target()} == "paged" {
+  if target() == "paged" {
     // Typst 0.14ではフォントやそのサイズは反映されない。
     // ビルド時にwarningが出てうっとおしいのでここで設定する
     set text(font: main-font, size: 12pt)
@@ -134,6 +135,7 @@
         href: "https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&family=Noto+Serif+JP:wght@400;700&display=swap",
       )
       
+      html.script(src: "/script.js")
       html.link(rel: "stylesheet", href: "/style.css")
       
       // OGPタグなど
@@ -142,53 +144,6 @@
       }
       html.elem("meta", attrs: (property: "og:title", content: title))
       raw_html(`<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "4b32234cfe9741ea8a4437f109f7b029"}'></script><!-- End Cloudflare Web Analytics -->`)
-      
-      html.script(
-        "
-        function shareX() {
-          const url = encodeURIComponent(window.location.href);
-          const text = encodeURIComponent(document.title);
-          window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
-        }
-        function shareMisskey() {
-          const url = encodeURIComponent(window.location.href);
-          const text = encodeURIComponent(document.title);
-          window.open(`https://misskey-hub.net/share/?text=${text}&url=${url}`, '_blank');
-        }
-        function openFeedback(url, entryId) {
-          const title = document.title;
-          // タイトルをURLエンコードしてパラメータに結合
-          const fullUrl = `${url}?usp=pp_url&${entryId}=${encodeURIComponent(title)}`;
-          window.open(fullUrl, '_blank');
-        }
-        function copyInfo() {
-          const title = document.title;
-          const desc = document.querySelector('meta[name=\"description\"]')?.content || '';
-          const url = window.location.href;
-          const textToCopy = `${title}\n${desc}\n${url}`;
-          
-          navigator.clipboard.writeText(textToCopy).then(() => {
-            const toast = document.getElementById('copy-toast');
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
-          });
-        }
-        document.addEventListener('DOMContentLoaded', () => {
-          document.querySelectorAll('.raw-html-embed').forEach(el => {
-            // data-html属性からHTMLコードを取り出す
-            const htmlContent = el.getAttribute('data-html');
-            if (htmlContent) {
-              // divタグ自体を、中身のHTMLコードで置き換える (outerHTML)
-              el.outerHTML = htmlContent;
-              
-              // 注: scriptタグを含む埋め込みコード(Twitterなど)の場合、
-              // 単純な置換ではスクリプトが実行されないことがあります。
-              // その場合は iframe 系の埋め込みコードを使うのが最も安全です。
-            }
-          });
-        });
-      ",
-      )
     })
     
     html.body({
@@ -349,12 +304,12 @@
   og-image: none,
   posts: none,
   body,
-) = {
+) = context {
   // 文書設定
   set document(title: title, author: authors)
   set text(lang: "ja")
   
-  if {context target()} == "paged" {
+  if target() == "paged" {
     set text(font: main-font, size: 12pt, lang: "ja")
     body
     return
@@ -440,15 +395,13 @@
         // --- サイドバー ---
         html.aside(class: "sidebar", {
           html.div(class: "sidebar-inner", {
-            // トップページなので目次(TOC)は表示しない
-            
             // 著者プロフィール
             html.div(class: "sidebar-widget", {
               html.h3(class: "widget-title", "執筆者")
               html.strong(authors.first())
               html.p(
                 style: "font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5em;",
-                [#link("https://bibouroku.minimarimo3.jp")[bibourokuminimarimo3.jp]の管理者],
+                [#link("https://bibouroku.minimarimo3.jp")[bibouroku.minimarimo3.jp]の管理者],
               )
             })
             

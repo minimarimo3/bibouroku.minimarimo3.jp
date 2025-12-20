@@ -7,58 +7,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&amp;family=Noto+Serif+JP:wght@400;700&amp;display=swap">
+    <script src="/script.js">
+    </script>
     <link rel="stylesheet" href="/style.css">
     <meta name="description" content="Typst v0.14の新機能を使って、Typstだけでブログシステムを構築する試み。">
     <meta property="og:title" content="Typstでブログを書く">
     <div class="raw-html-embed" data-html="<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{&quot;token&quot;: &quot;4b32234cfe9741ea8a4437f109f7b029&quot;}'></script><!-- End Cloudflare Web Analytics -->"></div>
-    <script>
-
-        function shareX() {
-          const url = encodeURIComponent(window.location.href);
-          const text = encodeURIComponent(document.title);
-          window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
-        }
-        function shareMisskey() {
-          const url = encodeURIComponent(window.location.href);
-          const text = encodeURIComponent(document.title);
-          window.open(`https://misskey-hub.net/share/?text=${text}&url=${url}`, '_blank');
-        }
-        function openFeedback(url, entryId) {
-          const title = document.title;
-          // タイトルをURLエンコードしてパラメータに結合
-          const fullUrl = `${url}?usp=pp_url&${entryId}=${encodeURIComponent(title)}`;
-          window.open(fullUrl, '_blank');
-        }
-        function copyInfo() {
-          const title = document.title;
-          const desc = document.querySelector('meta[name="description"]')?.content || '';
-          const url = window.location.href;
-          const textToCopy = `${title}
-${desc}
-${url}`;
-          
-          navigator.clipboard.writeText(textToCopy).then(() => {
-            const toast = document.getElementById('copy-toast');
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
-          });
-        }
-        document.addEventListener('DOMContentLoaded', () => {
-          document.querySelectorAll('.raw-html-embed').forEach(el => {
-            // data-html属性からHTMLコードを取り出す
-            const htmlContent = el.getAttribute('data-html');
-            if (htmlContent) {
-              // divタグ自体を、中身のHTMLコードで置き換える (outerHTML)
-              el.outerHTML = htmlContent;
-              
-              // 注: scriptタグを含む埋め込みコード(Twitterなど)の場合、
-              // 単純な置換ではスクリプトが実行されないことがあります。
-              // その場合は iframe 系の埋め込みコードを使うのが最も安全です。
-            }
-          });
-        });
-      
-    </script>
   </head>
   <body>
     <div class="site-container">
@@ -72,7 +26,7 @@ ${url}`;
               <div class="meta-tags"><span class="tag">#Typst</span><span class="tag">#HTML</span></div>
             </div>
           </header>
-          <div class="mobile-toc"><details><summary>目次を開く</summary><nav role="doc-toc"><ol style="list-style-type: none"><li><a href="#はじめに"><span class="prefix">1.</span> はじめに</a></li><li><a href="#loc-2"><span class="prefix">2.</span> アーキテクチャの概要</a></li><li><div><a href="#loc-3"><span class="prefix">3.</span> 実装</a></div><ol style="list-style-type: none"><li><a href="#loc-4"><span class="prefix">3.1.</span> Typstのテンプレートを作成する</a></li><li><a href="#loc-5"><span class="prefix">3.2.</span> サイトのアクセス解析を行う</a></li><li><a href="#loc-6"><span class="prefix">3.3.</span> 検索をサポートする</a></li><li><a href="#loc-7"><span class="prefix">3.4.</span> GitHub Actionsを作成しGitHub Pagesで公開する</a></li></ol></li><li><div><a href="#loc-8"><span class="prefix">4.</span> 詰まった点・落とし穴</a></div><ol style="list-style-type: none"><li><a href="#loc-9"><span class="prefix">4.1.</span> 数式のエクスポートが未実装</a></li><li><a href="#loc-10"><span class="prefix">4.2.</span> htmlを一から構築する場合footnoteが使用できない</a></li></ol></li><li><a href="#loc-11">参考文献</a></li></ol></nav></details></div>
+          <div class="mobile-toc"><details><summary>目次を開く</summary><nav role="doc-toc"><ol style="list-style-type: none"><li><a href="#はじめに"><span class="prefix">1.</span> はじめに</a></li><li><a href="#loc-2"><span class="prefix">2.</span> ファイル構成</a></li><li><div><a href="#loc-3"><span class="prefix">3.</span> 実装</a></div><ol style="list-style-type: none"><li><a href="#loc-4"><span class="prefix">3.1.</span> <code>html.html</code>で出力されるHTMLの構造をカスタマイズ</a></li><li><a href="#loc-5"><span class="prefix">3.2.</span> 関連記事のランダム生成</a></li><li><div><a href="#loc-6"><span class="prefix">3.3.</span> 未実装機能への対処</a></div><ol style="list-style-type: none"><li><a href="#loc-7"><span class="prefix">3.3.1.</span> 数式(Math)をSVG化して埋め込む</a></li><li><a href="#loc-8"><span class="prefix">3.3.2.</span> カスタムHTML構造での注釈(Footnote)</a></li></ol></li><li><a href="#loc-9"><span class="prefix">3.4.</span> GitHub Actionsを作成しGitHub Pagesで公開する</a></li></ol></li><li><a href="#loc-10">参考文献</a></li></ol></nav></details></div>
           <div class="article-abstract">
             <p><strong class="abstract-title">概要</strong></p>
             <p>Typst v0.14の新機能を使って、Typstだけでブログシステムを構築する試み。</p>
@@ -106,40 +60,39 @@ ${url}`;
             </table>
             <h2 id="はじめに">1. はじめに</h2>
             <p>Typst、とてもいいですよね。 Markdownのような書き心地でfigureやfootnoteや参考文献への参照等が書けるためとても気に入っています。</p>
-            <p>そのTypstですがバージョン0.14でHTMLエクスポート機能が大幅に強化されました。 なんとほとんど<span class="footnote-wrapper"><span class="footnote-marker">※0</span><span class="footnote-content">例えばカスタムHTML内でのfootnoteなどはまだ使えません</span></span>の<a href="https://typst.app/docs/reference/model/">セマンティック要素(Modelカテゴリの要素)</a>がHTMLとして適切に変換できるようになり<a id="loc-1" href="#loc-12" role="doc-biblioref">[1]</a>、また、<code>html.elem</code>を使用して任意のHTMLタグをTypstから生成できるようになりました。 これによりTypstはHTMLのDOMツリーを直接操作できるようになりました。</p>
+            <p>そのTypstですがバージョン0.14でHTMLエクスポート機能が大幅に強化されました。 なんとほとんど<span class="footnote-wrapper"><span class="footnote-marker">※0</span><span class="footnote-content">例えばカスタムHTML内でのfootnoteなどはまだ使えません</span></span>の<a href="https://typst.app/docs/reference/model/">セマンティック要素(Modelカテゴリの要素)</a>がHTMLとして適切に変換できるようになり<a id="loc-1" href="#loc-11" role="doc-biblioref">[1]</a>、また、<code>html.elem</code>を使用して任意のHTMLタグをTypstから生成できるようになりました。 これによりTypstはHTMLのDOMツリーを直接操作できるようになりました。</p>
             <p>そんなわけで実際にTypstだけで記述可能なブログシステムを作ってみました。 SSG(Static Site Generator)のようなものを構築したのですが、記事の記述等々をTypst内部だけで完結させた点が面白かったのでその裏側を紹介します。</p>
             <p>なお、スクリプトはWTFPLで公開しているものの、個人用に作ったものであるため他人が使うことを想定していません。 現時点でもここまでできるんだよということを紹介するためのものとして受け取ってもらいたいです。</p>
-            <h2 id="loc-2">2. アーキテクチャの概要</h2>
-            <p>ファイル構成は</p>
-            <figure>
-              <pre><code data-lang="sh"><span style="color: #4b69c6">BIBOUROKU.MINIMARIMO3.JP</span><br><span style="color: #4b69c6">│</span>  index.typ<br><span style="color: #4b69c6">│</span>  posts.typ<br><span style="color: #4b69c6">│</span>  template.typ<br><span style="color: #4b69c6">│</span>  build.py<br><span style="color: #4b69c6">│</span>  404.typ<br><span style="color: #4b69c6">│</span>  template.pdf<br><span style="color: #4b69c6">│</span><br><span style="color: #4b69c6">├─public</span><br><span style="color: #4b69c6">│</span>  │  index.html<br><span style="color: #4b69c6">│</span>  │  style.css<br><span style="color: #4b69c6">│</span>  │  404.html<br><span style="color: #4b69c6">│</span>  │  feed.xml<br><span style="color: #4b69c6">│</span>  │  sitemap.xml<br><span style="color: #4b69c6">│</span>  │<br><span style="color: #4b69c6">│</span>  ├─Typstでブログを書く<br><span style="color: #4b69c6">│</span>  │      index.html<br><span style="color: #4b69c6">│</span>  │      index.pdf<br><span style="color: #4b69c6">│</span>  │<br><span style="color: #4b69c6">│</span>  └─テスト<br><span style="color: #4b69c6">│</span>          index.html<br><span style="color: #4b69c6">│</span>          index.pdf<br><span style="color: #4b69c6">│</span>          テスト用画像.png<br><span style="color: #4b69c6">│</span><br><span style="color: #4b69c6">├─Typstでブログを書く</span><br><span style="color: #4b69c6">│</span>      index.pdf<br><span style="color: #4b69c6">│</span>      index.typ<br><span style="color: #4b69c6">│</span>      Typstでブログを書く.yaml<br><span style="color: #4b69c6">│</span><br><span style="color: #4b69c6">├─テスト</span><br><span style="color: #4b69c6">│</span>      index.pdf<br><span style="color: #4b69c6">│</span>      index.typ<br><span style="color: #4b69c6">│</span>      reference.bib<br><span style="color: #4b69c6">│</span>      テスト用画像.png<br><span style="color: #4b69c6">│</span><br><span style="color: #4b69c6">└─.github</span><br>  <span style="color: #4b69c6">└─workflows</span><br>          <span style="color: #4b69c6">deploy.yml</span></code></pre>
-              <figcaption>リスト 1:<span style="white-space: pre-wrap">&#x20;</span></figcaption>
+            <h2 id="loc-2">2. ファイル構成</h2>
+            <p>ファイル構成は<a href="#ファイル構成">コード 1</a>のようになっています。</p>
+            <figure id="ファイル構成">
+              <pre><code data-lang="sh"><span style="color: #4b69c6">BIBOUROKU.MINIMARIMO3.JP</span><br><span style="color: #4b69c6">│</span>  index.typ      <span style="color: #74747c">#</span><span style="color: #74747c"> トップページ</span><br><span style="color: #4b69c6">│</span>  style.css      <span style="color: #74747c">#</span><span style="color: #74747c"> サイトのスタイルシート</span><br><span style="color: #4b69c6">│</span>  posts.typ      <span style="color: #74747c">#</span><span style="color: #74747c"> 公開対象の記事のメタデータを記述するファイル</span><br><span style="color: #4b69c6">│</span>  template.typ   <span style="color: #74747c">#</span><span style="color: #74747c"> 記事のテンプレート</span><br><span style="color: #4b69c6">│</span>  build.py       <span style="color: #74747c">#</span><span style="color: #74747c"> posts.typのデータをもとにディレクトリを走査し、ビルドと添付ファイルの移動を行うスクリプト</span><br><span style="color: #4b69c6">│</span><br><span style="color: #4b69c6">├─public          </span><span style="color: #74747c">#</span><span style="color: #74747c"> ビルド後の出力先</span><br><span style="color: #4b69c6">│</span>  │  index.html<br><span style="color: #4b69c6">│</span>  │  style.css<br><span style="color: #4b69c6">│</span>  │  feed.xml    <span style="color: #74747c">#</span><span style="color: #74747c"> build.pyによって生成されます</span><br><span style="color: #4b69c6">│</span>  │  sitemap.xml <span style="color: #74747c">#</span><span style="color: #74747c"> build.pyによって生成されます</span><br><span style="color: #4b69c6">│</span>  │<br><span style="color: #4b69c6">│</span>  ├─Typstでブログを書く<br><span style="color: #4b69c6">│</span>  │      index.html<br><span style="color: #4b69c6">│</span>  │      index.pdf<br><span style="color: #4b69c6">│</span>  │<br><span style="color: #4b69c6">│</span>  └─テスト<br><span style="color: #4b69c6">│</span>          index.html<br><span style="color: #4b69c6">│</span>          index.pdf<br><span style="color: #4b69c6">│</span>          テスト用画像.png<br><span style="color: #4b69c6">│</span><br><span style="color: #4b69c6">├─Typstでブログを書く </span><span style="color: #74747c">#</span><span style="color: #74747c"> 記事1</span><br><span style="color: #4b69c6">│</span>      index.pdf<br><span style="color: #4b69c6">│</span>      index.typ<br><span style="color: #4b69c6">│</span>      Typstでブログを書く.yaml<br><span style="color: #4b69c6">│</span><br><span style="color: #4b69c6">├─テスト             </span><span style="color: #74747c">#</span><span style="color: #74747c"> 記事2</span><br><span style="color: #4b69c6">│</span>      index.pdf<br><span style="color: #4b69c6">│</span>      index.typ<br><span style="color: #4b69c6">│</span>      reference.bib<br><span style="color: #4b69c6">│</span>      テスト用画像.png<br><span style="color: #4b69c6">│</span><br><span style="color: #4b69c6">└─.github</span><br>  <span style="color: #4b69c6">└─workflows</span><br>          <span style="color: #4b69c6">deploy.yml</span></code></pre>
+              <figcaption>コード 1: 当ブログのファイル構成</figcaption>
             </figure>
-            <p>普通のテンプレートと同じように動作します。</p>
             <h2 id="loc-3">3. 実装</h2>
-            <h3 id="loc-4">3.1. Typstのテンプレートを作成する</h3>
-            <p>文書をHTMLエクスポートするだけなら<code>typst compile --features html --format html input.typ</code>すればよいのですが、この方法でコンパイルすると、styleやmetaであってもbody内に記述されてしまいます。 headに記述したい内容がある場合は<code>html.html</code>を使用してエクスポートするHTMLの構造を一から記述する必要があるみたいです。</p>
-            <p>また、0.14時点ではalign等のレイアウト系命令がエクスポート時に無視されるため、そのあたりはCSSを使用して実装する必要があります。</p>
-            <h3 id="loc-5">3.2. サイトのアクセス解析を行う</h3>
-            <p>アクセス解析に使えるのは色々ありますが 簡単に使えて同意を求めるプロンプトとか必要ないCloudflare Web Analyticsを採用します。</p>
-            <h3 id="loc-6">3.3. 検索をサポートする</h3>
-            <p>PageFindを使用して検索をサポートします。</p>
-            <h3 id="loc-7">3.4. GitHub Actionsを作成しGitHub Pagesで公開する</h3>
+            <h3 id="loc-4">3.1. <code>html.html</code>で出力されるHTMLの構造をカスタマイズ</h3>
+            <p><code>html.html</code>や<code>html.head</code>を使用せずにHTMLエクスポートすると、文書の内容はすべてbodyタグ内に記述されることになります。 これは<code>html.style</code>や<code>html.meta</code>であってもbodyタグ内に記述されるということです。 headに記述したい内容がある場合は<code>html.html</code>を使用してエクスポートするHTMLの構造を一から記述する必要があるみたいです。</p>
+            <p>今回のブログでは、<code>template.typ</code>内に以下のような構造を定義しました。</p>
+            <pre><code data-lang="typc">html.<span style="color: #4b69c6">html</span>(lang: <span style="color: #198810">"ja"</span>, {<br>  html.<span style="color: #4b69c6">head</span>({<br>    html.<span style="color: #4b69c6">meta</span>(charset: <span style="color: #198810">"utf-8"</span>)<br>    html.<span style="color: #4b69c6">meta</span>(name: <span style="color: #198810">"viewport"</span>, content: <span style="color: #198810">"width=device-width, initial-scale=1"</span>)<br>    html.<span style="color: #4b69c6">title</span>(title)<br>    <br>    <span style="color: #74747c">// OGP設定やGoogle Fontsの読み込み</span><br>    <span style="color: #d73948">if</span> description <span style="color: #d73948">!=</span> <span style="color: #198810">""</span> {<br>      html.<span style="color: #4b69c6">meta</span>(name: <span style="color: #198810">"description"</span>, content: description)<br>    }<br>    html.<span style="color: #4b69c6">elem</span>(<span style="color: #198810">"meta"</span>, attrs: (property: <span style="color: #198810">"og:title"</span>, content: title))<br>    html.<span style="color: #4b69c6">link</span>(rel: <span style="color: #198810">"stylesheet"</span>, href: <span style="color: #198810">"/style.css"</span>)<br>    html.<span style="color: #4b69c6">link</span>(rel: <span style="color: #198810">"preconnect"</span>, href: <span style="color: #198810">"https://fonts.googleapis.com"</span>)<br>    html.<span style="color: #4b69c6">link</span>(rel: <span style="color: #198810">"preconnect"</span>, href: <span style="color: #198810">"https://fonts.gstatic.com"</span>, crossorigin: <span style="color: #198810">"anonymous"</span>)<br>    <br>    html.<span style="color: #4b69c6">script</span>(src: <span style="color: #198810">"/script.js"</span>)<br>    html.<span style="color: #4b69c6">link</span>(rel: <span style="color: #198810">"stylesheet"</span>, href: <span style="color: #198810">"/style.css"</span>)<br>  })<br>  <br>  html.<span style="color: #4b69c6">body</span>({<br>    html.<span style="color: #4b69c6">div</span>(class: <span style="color: #198810">"site-container"</span>, {<br>      <span style="color: #74747c">// ヘッダー、記事本文、サイドバーなどを自由に配置</span><br>      html.<span style="color: #4b69c6">main</span>(class: <span style="color: #198810">"main-content"</span>, body)<br>      html.<span style="color: #4b69c6">aside</span>(class: <span style="color: #198810">"sidebar"</span>, { ... })<br>    })<br>  })<br>})</code></pre>
+            <h3 id="loc-5">3.2. 関連記事のランダム生成</h3>
+            <p>外部スクリプトで計算した結果を渡すのではなく、Typst内部で乱数を生成して記事を選んでいます。 ただし、ビルドのたびに関連記事が変わるのは困るので記事タイトルのハッシュ地をシードにして乱数を固定しています。</p>
+            <pre><code data-lang="typc"><span style="color: #74747c">// template.typより抜粋</span><br>#<span style="color: #d73948">import</span> <span style="color: #198810">"@preview/suiji:0.5.0"</span>: <span style="color: #d73948">*</span><br><br><span style="color: #74747c">// 記事タイトルを数値化してシードにする</span><br><span style="color: #d73948">let</span> seed <span style="color: #d73948">=</span> <span style="color: #4b69c6">int</span>(title.<span style="color: #4b69c6">clusters</span>().<span style="color: #4b69c6">map</span>(str.to-unicode).<span style="color: #4b69c6">map</span>(str).<span style="color: #4b69c6">join</span>().<span style="color: #4b69c6">slice</span>(<span style="color: #b60157">0</span>, <span style="color: #b60157">14</span>))<br><span style="color: #d73948">let</span> rng <span style="color: #d73948">=</span> <span style="color: #4b69c6">gen-rng</span>(seed)<br><br><span style="color: #74747c">// 記事リストをシャッフル</span><br><span style="color: #d73948">let</span> (_, indices) <span style="color: #d73948">=</span> <span style="color: #4b69c6">shuffle-f</span>(rng, <span style="color: #4b69c6">range</span>(other-posts.<span style="color: #4b69c6">len</span>()))<br><br><span style="color: #74747c">// 上位3件を取得</span><br><span style="color: #d73948">let</span> picks <span style="color: #d73948">=</span> indices.<span style="color: #4b69c6">slice</span>(<span style="color: #b60157">0</span>, <span style="color: #b60157">3</span>).<span style="color: #4b69c6">map</span>(i <span style="color: #d73948">=></span> other-posts.<span style="color: #4b69c6">at</span>(i))</code></pre>
+            <h3 id="loc-6">3.3. 未実装機能への対処</h3>
+            <h4 id="loc-7">3.3.1. 数式(Math)をSVG化して埋め込む</h4>
+            <p>現状、数式のHTMLエクスポートは未実装（または不完全）です。 そこで、数式を html.frame で一度フレーム（画像的な扱い）にし、SVGとしてHTML内に展開することで表示させました。</p>
+            <pre><code data-lang="typc"><span style="color: #d73948">show</span> math.equation.<span style="color: #4b69c6">where</span>(block: <span style="color: #d73948">false</span>): it <span style="color: #d73948">=></span> {<br>  html.<span style="color: #4b69c6">elem</span>(<span style="color: #198810">"span"</span>, attrs: (role: <span style="color: #198810">"math"</span>), html.<span style="color: #4b69c6">frame</span>(it))<br>}<br><span style="color: #d73948">show</span> math.equation.<span style="color: #4b69c6">where</span>(block: <span style="color: #d73948">true</span>): it <span style="color: #d73948">=></span> {<br>  html.<span style="color: #4b69c6">elem</span>(<span style="color: #198810">"figure"</span>, attrs: (role: <span style="color: #198810">"math"</span>), html.<span style="color: #4b69c6">frame</span>(it))<br>}</code></pre>
+            <h4 id="loc-8">3.3.2. カスタムHTML構造での注釈(Footnote)</h4>
+            <p><code>html.html</code>を使ってカスタム構造を作ると、標準の <code data-lang="typc">footnote</code> がエラーになります。</p>
+            <pre><code>error: footnotes are not currently supported in combination with a custom `&lt;html>` or `&lt;body>` element<br>   ┌─ \\?\G:\マイドライブ\bibouroku.minimarimo3.jp\テスト\index.typ:97:16<br>   │<br>97 │ これがノートを付けられる対象1#footnote[footnoteの中身1]<br>   │                               ^^^^^^^^^^^^^^^^^^^^^^^^^<br>   │<br>   = hint: you can still use footnotes with a custom footnote show rule</code></pre>
+            <p>幸いcounterは使えるので自分で実装することで対処することができます。</p>
+            <pre><code data-lang="typc"><span style="color: #d73948">let</span> note-counter <span style="color: #d73948">=</span> <span style="color: #4b69c6">counter</span>(<span style="color: #198810">"my-footnote"</span>)<br><span style="color: #d73948">show</span> <span style="color: #4b69c6">footnote</span>: it <span style="color: #d73948">=></span> {<br>  note-counter.<span style="color: #4b69c6">step</span>()<br>  <span style="color: #d73948">let</span> num <span style="color: #d73948">=</span> note-counter.<span style="color: #4b69c6">get</span>().<span style="color: #4b69c6">first</span>()<br>  <span style="color: #74747c">// CSSでツールチップ表示するためのHTML構造を出力</span><br>  html.<span style="color: #4b69c6">span</span>(class: <span style="color: #198810">"footnote-wrapper"</span>, {<br>    html.<span style="color: #4b69c6">span</span>(class: <span style="color: #198810">"footnote-marker"</span>, <span style="color: #198810">"※"</span> <span style="color: #d73948">+</span> <span style="color: #4b69c6">str</span>(num))<br>    html.<span style="color: #4b69c6">span</span>(class: <span style="color: #198810">"footnote-content"</span>, it.body)<br>  })<br>}</code></pre>
+            <h3 id="loc-9">3.4. GitHub Actionsを作成しGitHub Pagesで公開する</h3>
             <p><code>typst compile --features html --format html --root . (ディレクトリ)/index.typ public/(ディレクトリ)/index.html</code></p>
             <p>でおｋ！</p>
-            <h2 id="loc-8">4. 詰まった点・落とし穴</h2>
-            <h3 id="loc-9">4.1. 数式のエクスポートが未実装</h3>
-            <p>現時点では数式のエクスポートが未実装です。 しかし、数式をSVG画像に変換してHTMLに埋め込むことができます。</p>
-            <pre><code data-lang="typc"><span style="color: #d73948">show</span> math.equation.<span style="color: #4b69c6">where</span>(block: <span style="color: #d73948">false</span>): it <span style="color: #d73948">=></span> {<br>  html.<span style="color: #4b69c6">elem</span>(<span style="color: #198810">"span"</span>, attrs: (role: <span style="color: #198810">"math"</span>), html.<span style="color: #4b69c6">frame</span>(it))<br>}<br><span style="color: #d73948">show</span> math.equation.<span style="color: #4b69c6">where</span>(block: <span style="color: #d73948">true</span>): it <span style="color: #d73948">=></span> {<br>  html.<span style="color: #4b69c6">elem</span>(<span style="color: #198810">"figure"</span>, attrs: (role: <span style="color: #198810">"math"</span>), html.<span style="color: #4b69c6">frame</span>(it))<br>}</code></pre>
-            <h3 id="loc-10">4.2. htmlを一から構築する場合footnoteが使用できない</h3>
-            <p><code>html.html</code>や<code>html.body</code>を使用して自分でHTMLの構造を指定する場合、footnoteを使用するとエラーが出ます。</p>
-            <pre><code>error: footnotes are not currently supported in combination with a custom `&lt;html>` or `&lt;body>` element<br>   ┌─ \\?\G:\マイドライブ\bibouroku.minimarimo3.jp\テスト\index.typ:97:16<br>   │<br>97 │ これがノートを付けられる対象1#footnote[footnoteの中身1]<br>   │                               ^^^^^^^^^^^^^^^^^^^^^^^^^<br>   │<br>   = hint: you can still use footnotes with a custom footnote show rule</code></pre>
-            <p>幸いcounterは使えるので自分で実装することで対処できます。</p>
-            <pre><code data-lang="typc"><span style="color: #d73948">let</span> note-counter <span style="color: #d73948">=</span> <span style="color: #4b69c6">counter</span>(<span style="color: #198810">"my-footnote"</span>)<br><span style="color: #d73948">show</span> <span style="color: #4b69c6">footnote</span>: it <span style="color: #d73948">=></span> {<br>  note-counter.<span style="color: #4b69c6">step</span>()<br>  <span style="color: #d73948">let</span> num <span style="color: #d73948">=</span> note-counter.<span style="color: #4b69c6">get</span>().<span style="color: #4b69c6">first</span>()<br>  html.<span style="color: #4b69c6">span</span>(class: <span style="color: #198810">"footnote-wrapper"</span>, {<br>    html.<span style="color: #4b69c6">span</span>(class: <span style="color: #198810">"footnote-marker"</span>, <span style="color: #198810">"["</span> <span style="color: #d73948">+</span> <span style="color: #4b69c6">str</span>(num) <span style="color: #d73948">+</span> <span style="color: #198810">"]"</span>)<br>    html.<span style="color: #4b69c6">span</span>(class: <span style="color: #198810">"footnote-content"</span>, it.body)<br>  })<br>}</code></pre>
             <section role="doc-bibliography">
-              <h2 id="loc-11">参考文献</h2>
+              <h2 id="loc-10">参考文献</h2>
               <ul style="list-style-type: none">
-                <li id="loc-12"><span class="prefix"><a href="#loc-1" role="doc-backlink">[1]</a></span> L. Mädje と M. Haug, 「Typst: Typst 0.14: Now accessible – Typst Blog」, Typst. 参照: 2025年12月19日. [Online]. 入手先: <a href="https://typst.app/blog/2025/typst-0.14#richer-html-export:~:text=Most%20semantic%20elements%20(those%20from%20the%20Model%20category)%20are%20now%20properly%20mapped%20to%20semantic%20HTML.%20We%27ve%20also%20improved%20handling%20of%20textual%20content%20in%20HTML%20export.">https://typst.app/blog/2025/typst-0.14#richer-html-export:~:text=Most%20semantic%20elements%20(those%20from%20the%20Model%20category)%20are%20now%20properly%20mapped%20to%20semantic%20HTML.%20We%27ve%20also%20improved%20handling%20of%20textual%20content%20in%20HTML%20export.</a></li>
+                <li id="loc-11"><span class="prefix"><a href="#loc-1" role="doc-backlink">[1]</a></span> L. Mädje と M. Haug, 「Typst: Typst 0.14: Now accessible – Typst Blog」, Typst. 参照: 2025年12月19日. [Online]. 入手先: <a href="https://typst.app/blog/2025/typst-0.14#richer-html-export:~:text=Most%20semantic%20elements%20(those%20from%20the%20Model%20category)%20are%20now%20properly%20mapped%20to%20semantic%20HTML.%20We%27ve%20also%20improved%20handling%20of%20textual%20content%20in%20HTML%20export.">https://typst.app/blog/2025/typst-0.14#richer-html-export:~:text=Most%20semantic%20elements%20(those%20from%20the%20Model%20category)%20are%20now%20properly%20mapped%20to%20semantic%20HTML.%20We%27ve%20also%20improved%20handling%20of%20textual%20content%20in%20HTML%20export.</a></li>
               </ul>
             </section>
           </div>
@@ -169,24 +122,23 @@ ${url}`;
             <nav role="doc-toc">
               <ol style="list-style-type: none">
                 <li><a href="#はじめに"><span class="prefix">1.</span> はじめに</a></li>
-                <li><a href="#loc-2"><span class="prefix">2.</span> アーキテクチャの概要</a></li>
+                <li><a href="#loc-2"><span class="prefix">2.</span> ファイル構成</a></li>
                 <li>
                   <div><a href="#loc-3"><span class="prefix">3.</span> 実装</a></div>
                   <ol style="list-style-type: none">
-                    <li><a href="#loc-4"><span class="prefix">3.1.</span> Typstのテンプレートを作成する</a></li>
-                    <li><a href="#loc-5"><span class="prefix">3.2.</span> サイトのアクセス解析を行う</a></li>
-                    <li><a href="#loc-6"><span class="prefix">3.3.</span> 検索をサポートする</a></li>
-                    <li><a href="#loc-7"><span class="prefix">3.4.</span> GitHub Actionsを作成しGitHub Pagesで公開する</a></li>
+                    <li><a href="#loc-4"><span class="prefix">3.1.</span> <code>html.html</code>で出力されるHTMLの構造をカスタマイズ</a></li>
+                    <li><a href="#loc-5"><span class="prefix">3.2.</span> 関連記事のランダム生成</a></li>
+                    <li>
+                      <div><a href="#loc-6"><span class="prefix">3.3.</span> 未実装機能への対処</a></div>
+                      <ol style="list-style-type: none">
+                        <li><a href="#loc-7"><span class="prefix">3.3.1.</span> 数式(Math)をSVG化して埋め込む</a></li>
+                        <li><a href="#loc-8"><span class="prefix">3.3.2.</span> カスタムHTML構造での注釈(Footnote)</a></li>
+                      </ol>
+                    </li>
+                    <li><a href="#loc-9"><span class="prefix">3.4.</span> GitHub Actionsを作成しGitHub Pagesで公開する</a></li>
                   </ol>
                 </li>
-                <li>
-                  <div><a href="#loc-8"><span class="prefix">4.</span> 詰まった点・落とし穴</a></div>
-                  <ol style="list-style-type: none">
-                    <li><a href="#loc-9"><span class="prefix">4.1.</span> 数式のエクスポートが未実装</a></li>
-                    <li><a href="#loc-10"><span class="prefix">4.2.</span> htmlを一から構築する場合footnoteが使用できない</a></li>
-                  </ol>
-                </li>
-                <li><a href="#loc-11">参考文献</a></li>
+                <li><a href="#loc-10">参考文献</a></li>
               </ol>
             </nav>
           </div>

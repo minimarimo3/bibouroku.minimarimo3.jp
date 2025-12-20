@@ -11,6 +11,7 @@ POSTS_FILE = "posts.typ"
 METADATA_LABEL = "<post-list>"
 BASE_URL = "https://bibouroku.minimarimo3.jp"  # あなたのドメイン
 STYLE_CSS = "style.css"  # 共通CSSのファイル名
+SCRIPT_JS = "script.js"  # 共通JSのファイル名
 
 # コピーする静的ファイルの拡張子（必要に応じて追加）
 STATIC_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".pdf", ".js"}
@@ -121,6 +122,13 @@ def build():
     else:
         print("⚠️ style.css がルートに見つかりません（public/style.cssとして既に存在するならOK）")
 
+    # JSコピー
+    if os.path.exists(SCRIPT_JS):
+        shutil.copy2(SCRIPT_JS, "public/script.js")
+        print("✅ JSコピー完了")
+    else:
+        print("⚠️ script.js がルートに見つかりません（public/script.jsとして既に存在するならOK）")
+
 
     # 4. RSSフィード & サイトマップ生成
     print("\n📡 Generating RSS & Sitemap...")
@@ -131,6 +139,7 @@ def build():
 
 def generate_rss(posts):
     rss_path = os.path.join("public", "feed.xml")
+    # FIXME: NOWじゃなくて記事の日付にするべき。
     now = datetime.datetime.now(datetime.timezone.utc).strftime("%a, %d %b %Y %H:%M:%S GMT")
     
     xml = f"""<?xml version="1.0" encoding="UTF-8" ?>

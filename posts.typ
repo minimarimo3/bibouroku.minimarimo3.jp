@@ -19,6 +19,7 @@
   "テスト": (
     title: "テスト",
     create: datetime(year: 2025, month: 12, day: 12),
+    update: none,
     description: "サイトの表示テスト",
     tags: ("テスト",),
   ),
