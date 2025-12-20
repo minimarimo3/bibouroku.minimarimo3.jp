@@ -1,0 +1,16 @@
+Typst_Typst_Typst_0_14_Now_accessible_Ty:
+  type: web
+  title: "Typst: Typst 0.14: Now accessible – Typst Blog"
+  date: 2025-10-24
+  author:
+    - "Mädje, Laurenz"
+    - "Haug, Martin"
+  url:
+    value: "https://typst.app/blog/2025/typst-0.14#richer-html-export:~:text=Most%20semantic%20elements%20(those%20from%20the%20Model%20category)%20are%20now%20properly%20mapped%20to%20semantic%20HTML.%20We%27ve%20also%20improved%20handling%20of%20textual%20content%20in%20HTML%20export."
+    date: 2025-12-19
+  abstract: "Typst 0.14 is out now. With accessibility by default, PDFs as images, character-level justification, and more, it has everything you need to move from draft to..."
+  language: en
+  parent:
+    type: web
+    title: Typst
+

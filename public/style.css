@@ -832,3 +832,9 @@ tbody tr:nth-of-type(even) {
   text-decoration: none;
   transform: translateX(-4px);
 }
+
+/* 長いURLや単語を強制的に折り返す設定 */
+.article-body a {
+  overflow-wrap: anywhere; /* 可能な場所で折り返す */
+  word-break: break-all;   /* 必要なら単語の途中でも折り返す */
+}

@@ -83,14 +83,14 @@
   related_posts: (),
   ..args,
   body,
-) = context {
+) = {
   // PDF/HTML共通設定
   set document(title: title, author: authors)
   set heading(numbering: "1.")
   set text(lang: "ja")
   show figure.where(kind: table): set figure.caption(position: top)
   
-  if target() == "paged" {
+  if {context target()} == "paged" {
     // Typst 0.14ではフォントやそのサイズは反映されない。
     // ビルド時にwarningが出てうっとおしいのでここで設定する
     set text(font: main-font, size: 12pt)
@@ -349,12 +349,12 @@
   og-image: none,
   posts: none,
   body,
-) = context {
+) = {
   // 文書設定
   set document(title: title, author: authors)
   set text(lang: "ja")
   
-  if target() == "paged" {
+  if {context target()} == "paged" {
     set text(font: main-font, size: 12pt, lang: "ja")
     body
     return

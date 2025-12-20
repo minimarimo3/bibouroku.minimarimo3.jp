@@ -86,17 +86,20 @@ function generateCitationKey(item) {
     org = slugify(org);
 
     // 2. Date Part
+    /*
     let datePart = "";
     let dateObj = Zotero.Utilities.strToDate(item.date);
     if (dateObj && dateObj.year) {
         datePart = dateObj.year.toString() + "_";
     }
+    */
 
     // 3. Title Part
     let title = slugify(item.title || "notitle");
 
     // Combine
-    let fullKey = `${org}_${datePart}${title}`;
+    // let fullKey = `${org}_${datePart}${title}`;
+    let fullKey = `${org}_${title}`;
 
     // 40 char limit
     if (fullKey.length > 40) {

@@ -31,6 +31,16 @@ https://example.co.jp
 
 / 用語: 説明内容
 
+#quote(attribution: [Plato])[
+  ... ἔοικα γοῦν τούτου γε σμικρῷ τινι αὐτῷ τούτῳ σοφώτερος εἶναι, ὅτι
+  ἃ μὴ οἶδα οὐδὲ οἴομαι εἰδέναι.
+]
+
+#quote(attribution: [from the Henry Cary literal translation of 1897])[
+  ... I seem, then, in just this little thing to be wiser than this man at
+  any rate, that what I do not know I do not think I know either.
+]
+
 $(v dot nabla) v < "nya"$
 
 'シングルクオート'
