@@ -29,25 +29,19 @@ Markdownのような手軽な書き心地でありながら、図表や脚注、
 
 = ファイル構成
 
-ファイル構成は#[@ファイル構成]のようになっています。
+本ブログのファイル構成は以下の通りです（#[@ファイル構成]）。
 
-トップレベルには5つのファイルがあります。
-`index.typ`ではこのサイト(https://bibouroku.minimarimo3.jp)にアクセスしたとき最初に表示されるページを、
-`style.css`ではサイト全体のテーマを、
-`posts.typ`では記事のメタデータ（公開日、更新日、概要など）の管理を、
-`template.typ`では記事のテンプレートを、
-`build.py`では`posts.typ`のメタデータをもとにディレクトリを走査し、ビルドや添付ファイルの移動を担当しています。
+ルートディレクトリには、システムの中核となる5つのファイルを配置しています。
+- `index.typ`: トップページ（https://bibouroku.minimarimo3.jp）の生成元。
+- `style.css`: サイト全体のデザイン定義。
+- `posts.typ`: 全記事のメタデータ（タイトル、公開日、概要など）を集約管理するデータベース的なファイル。
+- `template.typ`: 記事の共通レイアウトやデザインを定義したテンプレート。
+- `build.py`: ビルドスクリプト。`posts.typ` から情報を読み取り、ディレクトリ走査やTypstコンパイル、静的ファイルの配置を一括で行います。
 
-`public`ディレクトリはビルド後の出力先です。
-Webサイトとして公開するのはこのディレクトリになります。
+ビルドの成果物は `public` ディレクトリに出力され、この中身がそのままWebサイトとして公開されます。
 
-その他ディレクトリは記事のディレクトリです。
-このディレクトリに記事を書き、`posts.typ`にその記事のメタデータ（公開日、更新日、概要など）を記述することで
-`index.typ`と`build.py`が記事の存在を認識しビルドされます。
-
-記事を記述するファイル名が`index.typ`になっていますが、これはWebサイトの慣習によるものです。
-`index.typ`をビルドすると通常`index.html`ができます。
-この`index.html`という名前は特別なもので、URLにアクセスするファイル名が指定されていないときにデフォルトでアクセスするファイルです。
+各記事は個別のディレクトリで管理しており、そこに執筆した `index.typ` を配置して `posts.typ` に登録することで、ビルド対象として認識される仕組みです。
+なお、記事ファイル名を `index.typ` としているのは、ビルド後の `index.html`（ディレクトリへのアクセス時にデフォルトで表示されるファイル）に対応させるためです。
 
 #figure(caption: [当ブログのファイル構成], ```sh
 BIBOUROKU.MINIMARIMO3.JP
@@ -92,11 +86,8 @@ BIBOUROKU.MINIMARIMO3.JP
 
 == `html.html`で出力されるHTMLの構造をカスタマイズ
 
-`html.html`や`html.head`を使用せずにHTMLエクスポートすると、文書の内容はすべてbodyタグ内に記述されることになります。
-これは`html.style`や`html.meta`であってもbodyタグ内に記述されるということです。
-headに記述したい内容がある場合は`html.html`を使用してエクスポートするHTMLの構造を一から記述する必要があるみたいです。
-
-今回のブログでは、`template.typ`内に以下のような構造を定義しました。
+TypstのHTMLエクスポートは通常、文書内容を `<body>` タグ内に出力します。しかし、`<head>` 内にOGPタグや外部CSS読み込みを記述したい場合、これでは不十分です。
+そこで `template.typ` では、`html.html` 関数を使用して `<html>` タグから始まる完全なDOM構造を定義しました。
 
 ```typc
 html.html(lang: "ja", {
@@ -127,10 +118,12 @@ html.html(lang: "ja", {
 })
 ```
 
+これにより、TypstだけでSEO対策やスタイリングに必要な構造を自由自在に作り込むことができます。
+
 == 関連記事のランダム生成
 
-外部スクリプトで計算した結果を渡すのではなく、Typst内部で乱数を生成して記事を選んでいます。
-ただし、ビルドのたびに関連記事が変わるのは困るので記事タイトルのハッシュ地をシードにして乱数を固定しています。
+ブログとしての回遊性を高めるため、記事下部に関連記事を表示しています。
+単にランダムに選ぶとビルドのたびに内容が変わってしまうため、記事タイトルのハッシュ値をシード（種）として使用し、乱数生成器を初期化することで、ランダムでありながら常に同じ結果が得られるように工夫しました。
 
 ```typc
 // template.typより抜粋
@@ -149,16 +142,41 @@ let picks = indices.slice(0, 3).map(i => other-posts.at(i))
 
 == 記事の情報をTypstで管理する
 
-ブログのトップページやRSSフィードを作るには全記事のリストとそのデータ（更新日等）が必要です。
-このために各記事ファイルのメタデータをまとめたファイル(`posts.typ`)で管理する仕組みを採用しました。
-これによりTypstファイルからは下のような形で、
+トップページの記事一覧やRSSフィードを生成するには、全記事のメタデータ（タイトルや更新日）が必要です。
+今回は`posts.typ`というファイルをデータベース代わりに使用するアーキテクチャを採用しました。
+
+```typ 
+#let post-data = (
+  "Typstでブログを書く": (
+    title: "Typstでブログを書く",
+    create: datetime(year: 2025, month: 12, day: 14),
+    update: datetime(year: 2025, month: 12, day: 15),
+    description: "Typst v0.14の新機能を使って、Typstだけでブログシステムを構築する試み。",
+    tags: ("Typst", "HTML"),
+  ),
+  "テスト": (
+    title: "テスト",
+    create: datetime(year: 2025, month: 12, day: 12),
+    update: none,
+    description: "サイトの表示テスト",
+    tags: ("テスト",),
+  ),
+)
+
+#metadata(post-data) <post-list>
+```
+
+Typstファイル内からは`import`することで辞書としてデータを扱えます：
+
 ```typ
 #import "../template.typ": project
 #import "../posts.typ": post-data
 #let meta = post-data.at("Typstでブログを書く")
 #show: project.with(..meta)
 ```
-ビルドスクリプト(Python)からは下のような形で同じ情報を取得することができます。
+
+一方、ビルドスクリプト（Python）からは`typst query`コマンドを使用することで同じ情報をJSON形式で取得できます。
+
 ```py
 result = subprocess.run(
     ["typst", "query", "posts.typ", "<post-list>"],
@@ -170,12 +188,16 @@ result = subprocess.run(
 data = json.loads(result.stdout)
 ```
 
+これにより、MarkdownのFrontmatterのようなメタデータ管理をTypstの文法だけで統一して行えるようになりました。
+
 == 未実装機能への対処
+
+HTMLエクスポートは発展途上のため数式や脚注などで工夫が必要な場面がありました。
 
 === 数式(Math)をSVG化して埋め込む
 
-現状、数式のHTMLエクスポートは未実装です。
-そこで、数式を html.frame で一度フレーム（画像的な扱い）にし、SVGとしてHTML内に展開することで表示させました。
+現状、数式のHTML化は完全ではありません。
+そこで`html.frame`を使って数式を一度フレーム（画像扱い）にし、SVGとしてHTML内に埋め込むことで表示しています。
 
 ```typc
 show math.equation.where(block: false): it => {
@@ -188,19 +210,20 @@ show math.equation.where(block: true): it => {
 
 === カスタムHTML構造での注釈(Footnote)
 
-`html.html`を使ってカスタム構造を作ると、標準の #footnote がエラーになります。
+`html.html`で独自のDOM構造を作ると、標準の`footnote`がエラーになる制限があります(#[@custom_dom_footnote])。
+これに対しては、Typstのcounter機能を使って自前で脚注システムを実装することで解決しました。
 
-```
-error: footnotes are not currently supported in combination with a custom `<html>` or `<body>` element
-   ┌─ \\?\G:\マイドライブ\bibouroku.minimarimo3.jp\テスト\index.typ:97:16
-   │
-97 │ これがノートを付けられる対象1#footnote[footnoteの中身1]
-   │                               ^^^^^^^^^^^^^^^^^^^^^^^^^
-   │
-   = hint: you can still use footnotes with a custom footnote show rule
-```
-
-幸いcounterは使えるので自分で実装することで対処することができます。
+#figure(caption: [独自のDOM構造でfootnoteを使用した際に出るエラー],
+  ```
+  error: footnotes are not currently supported in combination with a custom `<html>` or `<body>` element
+     ┌─ \\?\G:\マイドライブ\bibouroku.minimarimo3.jp\テスト\index.typ:97:16
+     │
+  97 │ これがノートを付けられる対象1#footnote[footnoteの中身1]
+     │                               ^^^^^^^^^^^^^^^^^^^^^^^^^
+     │
+     = hint: you can still use footnotes with a custom footnote show rule
+  ```
+) <custom_dom_footnote>
 
 ```typc
 let note-counter = counter("my-footnote")
@@ -217,7 +240,9 @@ show footnote: it => {
 
 = まとめ
 
-TypstでのHTML生成はまだ実験的な機能ですが、個人のブログや小規模なドキュメントサイトなら十分実用できるレベルにあると感じました。
-何より、慣れ親しんだTypst記法で記事が書けて、それがそのままWebサイトになるのは非常に快適です。
+TypstのHTML生成機能はまだ実験的な側面もありますが、個人のブログやドキュメントサイト構築には十分実用できるレベルに達していると感じました。
+何より、普段のドキュメント作成で慣れ親しんだTypst記法がそのままWebサイトとして出力される体験は、非常に快適です。
+
+皆さんもぜひ、Typstで自分だけのWebサイトを作ってみてください！
 
 #bibliography("Typstでブログを書く.yaml")
