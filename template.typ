@@ -120,6 +120,7 @@
 
 #let widget-author(
   author: "minimarimo3",
+  message: [その辺の大学生],
   socials: (
     x: "https://x.com/minimarimo3",
     misskey: "https://misskey.io/@minimarimo3",
@@ -131,7 +132,7 @@
     html.strong(author)
     html.p(
       style: "font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5em;",
-      [],
+      message,
     )
     if socials != none {
       html.div(class: "author-links", {
@@ -251,6 +252,7 @@
                       "最終更新日: " + update.display("[year]-[month]-[day]"),
                     )
                   }
+                  html.a(class: "meta-pdf-link", href: "index.pdf", target: "_blank", "PDF")
                 })
                 if tags.len() > 0 {
                   html.div(class: "meta-tags", {

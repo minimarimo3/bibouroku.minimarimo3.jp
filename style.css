@@ -906,3 +906,18 @@ tbody tr:nth-of-type(even) {
 .author-icon-link:hover .icon-x { fill: var(--text-color); } /* Xは黒(ダークなら白) */
 .author-icon-link:hover .icon-misskey { fill: #96c02e; }    /* Misskeyの緑 */
 .author-icon-link:hover .icon-github { fill: var(--text-color); }
+
+/* --- PDFリンク --- */
+.meta-pdf-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-code);
+  font-size: 0.9rem;
+  color: var(--accent-color);
+  text-decoration: none;
+}
+
+.meta-pdf-link:hover {
+  text-decoration: underline;
+}
