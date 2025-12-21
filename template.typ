@@ -177,13 +177,13 @@
 #let project(
   title: "ブログタイトル",
   authors: ("minimarimo3",),
+  create: none,
+  update: none,
   tags: (),
   description: none,
   og-image: none,
   feedback_url: "https://docs.google.com/forms/d/e/1FAIpQLSdyN8Q-zohUmlOxASKnJjwSSgs-S0PkHZMXDg2Zh8GgSTgOkQ/viewform",
   feedback_entry_id: "entry.629693238",
-  create: none,
-  update: none,
   related_posts: (),
   ..args,
   body,
@@ -322,7 +322,8 @@
             }
           })
           
-          let other-posts = post-data.pairs().filter(p => p.last().title != title)
+          assert(create != none)
+          let other-posts = post-data.pairs().filter(p => p.last().title != title).filter(p => p.last().create < create)
           if other-posts.len() > 0 {
             // 関連記事エリア
             html.hr(class: "section-divider")

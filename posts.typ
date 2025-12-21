@@ -6,7 +6,7 @@
 // 記事データを登録する関数
 #let post(
   dir,    // 第1引数: ディレクトリ名 (URLになります)
-  date,   // 第2引数: 作成日 (d関数を使うと楽)
+  create,   // 第2引数: 作成日 (d関数を使うと楽)
   title: auto,  // タイトル (省略したらディレクトリ名と同じになります)
   update: none, // 更新日
   desc: "",     // 説明文
@@ -16,7 +16,7 @@
     dir,
     (
       title: if title == auto { dir } else { title },
-      create: date,
+      create: create,
       update: update,
       description: desc,
       tags: tags,

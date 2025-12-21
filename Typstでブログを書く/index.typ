@@ -120,14 +120,17 @@ html.html(lang: "ja", {
 
 これにより、TypstだけでSEO対策やスタイリングに必要な構造を自由自在に作り込むことができます。
 
-== 関連記事のランダム生成
+== その他の記事のランダム生成
 
-ブログとしての回遊性を高めるため、記事下部に関連記事を表示しています。
+ブログとしての回遊性を高めるため、記事下部にほかの記事を表示しています。
 単にランダムに選ぶとビルドのたびに内容が変わってしまうため、記事タイトルのハッシュ値をシード（種）として使用し、乱数生成器を初期化することで、ランダムでありながら常に同じ結果が得られるように工夫しました。
 
 ```typc
 // template.typより抜粋
 import "@preview/suiji:0.5.0": *
+
+// 自分以外かつ作成日が自分より若い記事が対象
+let other-posts = post-data.pairs().filter(p => p.last().title != title).filter(p => p.last().create < create)
 
 // 記事タイトルを数値化してシードにする
 let seed = int(title.clusters().map(str.to-unicode).map(str).join().slice(0, 14))

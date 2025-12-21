@@ -4,7 +4,7 @@
   title: "404 Not Found",
   description: "お探しのページは見つかりませんでした。",
   authors: ("minimarimo3",),
-  // 404ページには日付などは不要
+  create: datetime(year: 2025, month: 12, day: 12)
 )
 
 = ページが見つかりません
