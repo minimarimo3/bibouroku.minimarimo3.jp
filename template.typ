@@ -162,7 +162,7 @@
     html.p(
       style: "font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5em;",
       [
-        本サイトの内容は#link("https://www.wtfpl.net")[WTFPL]で公開されています。
+        本サイトの内容は特に記載がない限り#link("https://www.wtfpl.net")[WTFPL]の元で提供されます。
         また、アクセス解析のために#link("https://www.cloudflare.com/ja-jp/web-analytics/")[Cloudflare Web Analytics]を使用しています。このツールはCookieを使用せず、個人を特定する情報は収集されません。
         サイトに関するご意見は#link("https://forms.gle/hhLGvUeWKyNK1UUz6")[Googleフォーム]までお願いします。
 
@@ -196,7 +196,7 @@
   
   if target() == "paged" {
     // Typst 0.14ではフォントやそのサイズは反映されない。
-    // ビルド時にwarningが出てうっとおしいのでここで設定する
+    // ビルド時にwarningが出てうっとおしいのでフォントはここで設定する
     set text(font: main-font, size: 12pt)
     body
     return
