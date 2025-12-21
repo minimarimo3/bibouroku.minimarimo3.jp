@@ -150,7 +150,7 @@ let picks = indices.slice(0, 3).map(i => other-posts.at(i))
   "Typstでブログを書く": (
     title: "Typstでブログを書く",
     create: datetime(year: 2025, month: 12, day: 14),
-    update: datetime(year: 2025, month: 12, day: 15),
+    update: datetime(year: 2025, month: 12, day: 21),
     description: "Typst v0.14の新機能を使って、Typstだけでブログシステムを構築する試み。",
     tags: ("Typst", "HTML"),
   ),

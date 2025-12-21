@@ -1,5 +1,6 @@
 import subprocess
 import json
+import re
 import os
 import shutil
 import datetime
@@ -47,18 +48,18 @@ def build():
         meta["dir_path"] = dir_path
         # 日付のパース処理
         create_date = meta.get("create")
-        if isinstance(create_date, dict):
-            # Typstの辞書形式 {"year": 2025, "month": 12, ...} をPythonのdatetimeに
-            meta["dt"] = datetime.datetime(
-                create_date.get("year", 1970),
-                create_date.get("month", 1),
-                create_date.get("day", 1)
+        # 文字列の場合: "datetime(year: 2025, month: 12, day: 14)" 形式をパース
+        # 正規表現で year, month, day を抽出
+        match = re.search(r"year:\s*(\d+),\s*month:\s*(\d+),\s*day:\s*(\d+)", create_date)
+        if match:
+            dt = datetime.datetime(
+                int(match.group(1)),
+                int(match.group(2)),
+                int(match.group(3))
             )
-        else:
-            meta["dt"] = datetime.datetime.now() # 取得できない場合は現在時刻
-            
+        meta["dt"] = dt
         sorted_posts.append(meta)
-    
+
     sorted_posts.sort(key=lambda x: x["dt"], reverse=True)
 
 
@@ -139,7 +140,6 @@ def build():
 
 def generate_rss(posts):
     rss_path = os.path.join("public", "feed.xml")
-    # FIXME: NOWじゃなくて記事の日付にするべき。
     now = datetime.datetime.now(datetime.timezone.utc).strftime("%a, %d %b %Y %H:%M:%S GMT")
     
     xml = f"""<?xml version="1.0" encoding="UTF-8" ?>

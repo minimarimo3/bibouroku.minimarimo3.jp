@@ -143,7 +143,11 @@
         html.meta(name: "description", content: description)
       }
       html.elem("meta", attrs: (property: "og:title", content: title))
-      raw_html(`<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "4b32234cfe9741ea8a4437f109f7b029"}'></script><!-- End Cloudflare Web Analytics -->`)
+      html.elem("script", attrs: (
+        defer: "",
+        src: "https://static.cloudflareinsights.com/beacon.min.js",
+        data-cf-beacon: "{'token': '4b32234cfe9741ea8a4437f109f7b029'}"
+      ))
     })
     
     html.body({
@@ -412,7 +416,7 @@
                 style: "font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5em;",
                 [
                   本サイトの内容は#link("https://www.wtfpl.net")[WTFPL]で公開されています。
-                  また、アクセス解析のために「#link("https://www.cloudflare.com/ja-jp/web-analytics/")[Cloudflare Web Analytics]を使用しています。このツールはCookieを使用せず、個人を特定する情報は収集されません。
+                  また、アクセス解析のために#link("https://www.cloudflare.com/ja-jp/web-analytics/")[Cloudflare Web Analytics]を使用しています。このツールはCookieを使用せず、個人を特定する情報は収集されません。
                   サイトに関するご意見は#link("https://forms.gle/hhLGvUeWKyNK1UUz6")[Googleフォーム]までお願いします。
                 ],
               )
