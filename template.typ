@@ -104,6 +104,7 @@
       "script",
       attrs: (
         defer: "",
+        src: "https://static.cloudflareinsights.com/beacon.min.js",
         data-cf-beacon: "{'token': '4b32234cfe9741ea8a4437f109f7b029'}",
       )
     )
