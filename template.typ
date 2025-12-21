@@ -160,12 +160,12 @@
               html.div(class: "article-meta", {
                 html.div(class: "meta-dates", {
                   if create != none {
-                    html.span(class: "meta-date", "文書作成日: " + create.display("[year repr:last_two]-[month]-[day]"))
+                    html.span(class: "meta-date", "文書作成日: " + create.display("[year]-[month]-[day]"))
                   }
                   if update != none {
                     html.span(
                       class: "meta-date",
-                      "最終更新日: " + update.display("[year repr:last_two]-[month]-[day]"),
+                      "最終更新日: " + update.display("[year]-[month]-[day]"),
                     )
                   }
                 })
@@ -257,7 +257,7 @@
                   html.a(class: "post-card", href: url, {
                     html.div(class: "card-content", {
                       if "create" in post {
-                        html.time(class: "card-date", post.create.display("[year repr:last_two]-[month]-[day]"))
+                        html.time(class: "card-date", post.create.display("[year]-[month]-[day]"))
                       }
                       html.h3(class: "card-title", post.title)
                       if "description" in post { html.p(class: "card-desc", post.description) }
@@ -367,7 +367,7 @@
                 html.div(class: "card-content", {
                   // 日付
                   if "create" in post {
-                    html.time(class: "card-date", post.create.display("[year repr:last_two]-[month]-[day]"))
+                    html.time(class: "card-date", post.create.display("[year]-[month]-[day]"))
                   }
                   
                   // タイトル

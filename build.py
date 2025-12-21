@@ -20,8 +20,8 @@ def build():
     print("🚀 ビルドを開始します...")
     
     # publicフォルダのリセット（必要ならコメントアウトを外す）
-    # if os.path.exists("public"):
-    #     shutil.rmtree("public")
+    if os.path.exists("public"):
+        shutil.rmtree("public")
     os.makedirs("public", exist_ok=True)
 
     # 1. 記事リストの取得

@@ -4,86 +4,89 @@
 #show: project.with(..meta)
 
 #note[
-  この記事は#link("https://qiita.com/advent-calendar/2025/typst")[Typst Advent Calender 2025]のTODO日目の記事です。
+  この記事は#link("https://qiita.com/advent-calendar/2025/typst")[Typst Advent Calender 2025]の23日目の記事です。
 ]
 
 #env(
-  ("Typst", "0.14", "TYPST_FEATURES=html",),
-  ("Tinymist Typst", "0.14.4",)
+  ("Typst", "0.14", "TYPST_FEATURES=html"),
+  ("Tinymist Typst", "0.14.4"),
 )
 
 = はじめに<はじめに>
 
 Typst、とてもいいですよね。
-Markdownのような書き心地でfigureやfootnoteや参考文献への参照等が書けるためとても気に入っています。
+Markdownのような手軽な書き心地でありながら、図表や脚注、参考文献まで美しく扱えるため、私も愛用しています。
 
-そのTypstですがバージョン0.14でHTMLエクスポート機能が大幅に強化されました。
-なんとほとんど#footnote[例えばカスタムHTML内でのfootnoteなどはまだ使えません]の#link("https://typst.app/docs/reference/model/")[セマンティック要素(Modelカテゴリの要素)]がHTMLとして適切に変換できるようになり#[@Typst_Typst_Typst_0_14_Now_accessible_Ty]、また、`html.elem`を使用して任意のHTMLタグをTypstから生成できるようになりました。
-これによりTypstはHTMLのDOMツリーを直接操作できるようになりました。
+そんなTypstですが、バージョン0.14でHTMLエクスポート機能が大幅に強化されました。
+セマンティックな要素のほとんど#footnote[例えばカスタムHTML内での標準footnoteなど、一部未対応の機能もあります。]が適切なHTMLタグに変換されるようになったほか#[@Typst_Typst_Typst_0_14_Now_accessible_Ty]、`html.elem` を使うことで任意のHTMLタグを生成可能になりました。
+つまり、TypstからHTMLのDOMツリーを直接操作できるようになったのです。
 
-そんなわけで実際にTypstだけで記述可能なブログシステムを作ってみました。
-SSG(Static Site Generator)のようなものを構築したのですが、記事の記述等々をTypst内部だけで完結させた点が面白かったのでその裏側を紹介します。
+そこで今回はこの機能を活用して、Typstだけで記述・構築するブログシステムを作ってみました。
+一般的なSSG（静的サイトジェネレータ）を使わず、記事の執筆からメタデータ管理までをTypst内部で完結させる仕組みです。
 
-なお、スクリプトはWTFPLで公開しているものの、個人用に作ったものであるため他人が使うことを想定していません。
-現時点でもここまでできるんだよということを紹介するためのものとして受け取ってもらいたいです。
+なお本システムのスクリプトはWTFPLライセンスで公開していますが、あくまで個人利用を目的とした実験的なものです。
+その点はご了承ください。
 
 = ファイル構成
 
 ファイル構成は#[@ファイル構成]のようになっています。
 
-#figure(caption: [当ブログのファイル構成],
-  ```sh
-  BIBOUROKU.MINIMARIMO3.JP
-  │  index.typ      # トップページ
-  │  style.css      # サイトのスタイルシート
-  │  posts.typ      # 公開対象の記事のメタデータを記述するファイル
-  │  template.typ   # 記事のテンプレート
-  │  build.py       # posts.typのデータをもとにディレクトリを走査し、ビルドと添付ファイルの移動を行うスクリプト
-  │
-  ├─public          # ビルド後の出力先
-  │  │  index.html
-  │  │  style.css
-  │  │  feed.xml    # build.pyによって生成されます
-  │  │  sitemap.xml # build.pyによって生成されます
-  │  │
-  │  ├─Typstでブログを書く
-  │  │      index.html
-  │  │      index.pdf
-  │  │
-  │  └─テスト
-  │          index.html
-  │          index.pdf
-  │          テスト用画像.png
-  │
-  ├─Typstでブログを書く # 記事1
-  │      index.pdf
-  │      index.typ
-  │      Typstでブログを書く.yaml
-  │
-  ├─テスト             # 記事2
-  │      index.pdf
-  │      index.typ
-  │      reference.bib
-  │      テスト用画像.png
-  │
-  └─.github
-    └─workflows
-            deploy.yml
-  ```
-) <ファイル構成>
+トップレベルには5つのファイルがあります。
+`index.typ`ではこのサイト(https://bibouroku.minimarimo3.jp)にアクセスしたとき最初に表示されるページを、
+`style.css`ではサイト全体のテーマを、
+`posts.typ`では記事のメタデータ（公開日、更新日、概要など）の管理を、
+`template.typ`では記事のテンプレートを、
+`build.py`では`posts.typ`のメタデータをもとにディレクトリを走査し、ビルドや添付ファイルの移動を担当しています。
 
-/*
-= 使用方法
+`public`ディレクトリはビルド後の出力先です。
+Webサイトとして公開するのはこのディレクトリになります。
 
-記事はディレクトリごとに記述していく形になります。
-`記事を公開するディレクトリ名/index.typ`は記事のメインファイルで、ここに記事を記述します。
+その他ディレクトリは記事のディレクトリです。
+このディレクトリに記事を書き、`posts.typ`にその記事のメタデータ（公開日、更新日、概要など）を記述することで
+`index.typ`と`build.py`が記事の存在を認識しビルドされます。
 
-記事一覧やRSSフィードを作るには全記事のリストが必要です。
-Pythonでディレクトリをスキャンすることもできるのですが、幸いTypstには#link("https://typst.app/docs/reference/introspection/metadata/")[metadata]という関数があります。
-この関数は文書内にメタデータを埋め込むことができる関数で、Typstファイルのみならず`typst query`コマンドを使うことでtypst cliからもJSON形式でその情報を取得できるすぐれものです。
+記事を記述するファイル名が`index.typ`になっていますが、これはWebサイトの慣習によるものです。
+`index.typ`をビルドすると通常`index.html`ができます。
+この`index.html`という名前は特別なもので、URLにアクセスするファイル名が指定されていないときにデフォルトでアクセスするファイルです。
 
-通常のテンプレートであれば`#import "../template.typ": project`で`project.with(title: "hogehoge")`と書いていくことになると思うのですが、
-*/
+#figure(caption: [当ブログのファイル構成], ```sh
+BIBOUROKU.MINIMARIMO3.JP
+│  index.typ      # トップページ
+│  style.css      # サイト全体のテーマを設定するファイル
+│  posts.typ      # 公開対象の記事のメタデータを記述するファイル
+│  template.typ   # 記事のテンプレート
+│  build.py       # posts.typのデータをもとにディレクトリを走査し、ビルドと添付ファイルの移動を行うスクリプト
+│
+├─public          # ビルド後の出力先
+│  │  index.html
+│  │  style.css
+│  │  feed.xml    # build.pyによって生成されます
+│  │  sitemap.xml # build.pyによって生成されます
+│  │
+│  ├─Typstでブログを書く
+│  │      index.html
+│  │      index.pdf
+│  │
+│  └─テスト
+│          index.html
+│          index.pdf
+│          テスト用画像.png
+│
+├─Typstでブログを書く # 記事1
+│      index.pdf
+│      index.typ
+│      Typstでブログを書く.yaml
+│
+├─テスト             # 記事2
+│      index.pdf
+│      index.typ
+│      reference.bib
+│      テスト用画像.png
+│
+└─.github
+  └─workflows
+          deploy.yml
+```) <ファイル構成>
 
 = 実装
 
@@ -107,7 +110,6 @@ html.html(lang: "ja", {
       html.meta(name: "description", content: description)
     }
     html.elem("meta", attrs: (property: "og:title", content: title))
-    html.link(rel: "stylesheet", href: "/style.css")
     html.link(rel: "preconnect", href: "https://fonts.googleapis.com")
     html.link(rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: "anonymous")
     
@@ -145,12 +147,36 @@ let (_, indices) = shuffle-f(rng, range(other-posts.len()))
 let picks = indices.slice(0, 3).map(i => other-posts.at(i))
 ```
 
+== 記事の情報をTypstで管理する
+
+ブログのトップページやRSSフィードを作るには全記事のリストとそのデータ（更新日等）が必要です。
+このために各記事ファイルのメタデータをまとめたファイル(`posts.typ`)で管理する仕組みを採用しました。
+これによりTypstファイルからは下のような形で、
+```typ
+#import "../template.typ": project
+#import "../posts.typ": post-data
+#let meta = post-data.at("Typstでブログを書く")
+#show: project.with(..meta)
+```
+ビルドスクリプト(Python)からは下のような形で同じ情報を取得することができます。
+```py
+result = subprocess.run(
+    ["typst", "query", "posts.typ", "<post-list>"],
+    capture_output=True,
+    text=True,
+    check=True,
+    encoding="utf-8"
+)
+data = json.loads(result.stdout)
+```
+
 == 未実装機能への対処
 
 === 数式(Math)をSVG化して埋め込む
 
-現状、数式のHTMLエクスポートは未実装（または不完全）です。
+現状、数式のHTMLエクスポートは未実装です。
 そこで、数式を html.frame で一度フレーム（画像的な扱い）にし、SVGとしてHTML内に展開することで表示させました。
+
 ```typc
 show math.equation.where(block: false): it => {
   html.elem("span", attrs: (role: "math"), html.frame(it))
@@ -189,10 +215,9 @@ show footnote: it => {
 }
 ```
 
-== GitHub Actionsを作成しGitHub Pagesで公開する
+= まとめ
 
-`typst compile --features html --format html --root . (ディレクトリ)/index.typ public/(ディレクトリ)/index.html`
-
-でおｋ！
+TypstでのHTML生成はまだ実験的な機能ですが、個人のブログや小規模なドキュメントサイトなら十分実用できるレベルにあると感じました。
+何より、慣れ親しんだTypst記法で記事が書けて、それがそのままWebサイトになるのは非常に快適です。
 
 #bibliography("Typstでブログを書く.yaml")
