@@ -121,9 +121,9 @@
 #let widget-author(
   author: "minimarimo3",
   socials: (
-    x: "https://x.com/your_id",
-    misskey: "https://misskey.io/@your_id",
-    github: "https://github.com/your_id",
+    x: "https://x.com/minimarimo3",
+    misskey: "https://misskey.io/@minimarimo3",
+    github: "https://github.com/minimarimo3",
   ),
 ) = {
   html.div(class: "sidebar-widget", {

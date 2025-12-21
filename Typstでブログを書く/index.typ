@@ -127,7 +127,7 @@ html.html(lang: "ja", {
 
 ```typc
 // template.typより抜粋
-#import "@preview/suiji:0.5.0": *
+import "@preview/suiji:0.5.0": *
 
 // 記事タイトルを数値化してシードにする
 let seed = int(title.clusters().map(str.to-unicode).map(str).join().slice(0, 14))
