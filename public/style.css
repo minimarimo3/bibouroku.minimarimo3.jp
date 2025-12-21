@@ -866,3 +866,43 @@ tbody tr:nth-of-type(even) {
   overflow-wrap: anywhere; /* 可能な場所で折り返す */
   word-break: break-all;   /* 必要なら単語の途中でも折り返す */
 }
+
+/* --- 著者プロフィール用SNSアイコン --- */
+.author-links {
+  display: flex;
+  gap: 12px;
+  margin-top: 15px;
+  flex-wrap: wrap;
+}
+
+.author-icon-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: transparent;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.author-icon-link svg {
+  width: 18px;
+  height: 18px;
+  fill: var(--text-muted); /* デフォルトはグレー */
+  transition: fill 0.2s ease;
+}
+
+/* ホバー時の設定 */
+.author-icon-link:hover {
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* ブランドカラー (ホバー時) */
+.author-icon-link:hover .icon-x { fill: var(--text-color); } /* Xは黒(ダークなら白) */
+.author-icon-link:hover .icon-misskey { fill: #96c02e; }    /* Misskeyの緑 */
+.author-icon-link:hover .icon-github { fill: var(--text-color); }
