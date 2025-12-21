@@ -28,14 +28,13 @@ def build():
     # 1. 記事リストの取得
     try:
         result = subprocess.run(
-            ["typst", "query", POSTS_FILE, METADATA_LABEL],
+            ["typst", "query", "--field", "value", POSTS_FILE, METADATA_LABEL],
             capture_output=True,
             text=True,
             check=True,
             encoding="utf-8"
         )
-        data = json.loads(result.stdout)
-        posts_dict = data[0]["value"] if data else {}
+        posts_dict = json.loads(result.stdout)[0]
         print(f"📄 {len(posts_dict)} 件の記事が見つかりました。\n")
     except Exception as e:
         print(f"❌ エラー: 記事リストの取得に失敗しました。\n{e}")

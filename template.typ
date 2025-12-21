@@ -105,7 +105,7 @@
       attrs: (
         defer: "",
         src: "https://static.cloudflareinsights.com/beacon.min.js",
-        data-cf-beacon: "{'token': '4b32234cfe9741ea8a4437f109f7b029'}",
+        data-cf-beacon: "{\"token\": \"4b32234cfe9741ea8a4437f109f7b029\"}",
       )
     )
 
@@ -209,7 +209,7 @@
   let note-counter = counter("my-footnote")
   show footnote: it => {
     note-counter.step()
-    let num = note-counter.get().first()
+    let num = note-counter.get().first() + 1
     html.span(class: "footnote-wrapper", {
       html.span(class: "footnote-marker", "※" + str(num))
       html.span(class: "footnote-content", it.body)

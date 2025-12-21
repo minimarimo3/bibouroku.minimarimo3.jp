@@ -15,13 +15,13 @@
 = はじめに<はじめに>
 
 Typst、とてもいいですよね。
-Markdownのような手軽な書き心地でありながら、図表や脚注、参考文献まで美しく扱えるため、私も愛用しています。
+Markdownのような手軽な書き心地でありながら、図表や脚注、参考文献まで美しく扱えるため気に入っています。
 
 そんなTypstですが、バージョン0.14でHTMLエクスポート機能が大幅に強化されました。
-セマンティックな要素のほとんど#footnote[例えばカスタムHTML内での標準footnoteなど、一部未対応の機能もあります。]が適切なHTMLタグに変換されるようになったほか#[@Typst_Typst_Typst_0_14_Now_accessible_Ty]、`html.elem` を使うことで任意のHTMLタグを生成可能になりました。
+#link("https://typst.app/docs/reference/model/")[セマンティックな要素]のほとんど#footnote[例えばカスタムHTML内でのfootnoteなど、一部未対応の機能もあります。]が適切なHTMLタグに変換されるようになったほか#[@Typst_Typst_Typst_0_14_Now_accessible_Ty]、`html.elem` を使うことで任意のHTMLタグを生成可能になりました。
 つまり、TypstからHTMLのDOMツリーを直接操作できるようになったのです。
 
-そこで今回はこの機能を活用して、Typstだけで記述・構築するブログシステムを作ってみました。
+そこで今回はこの機能を活用して、Typstだけで記述・構築可能なブログシステムを作ってみました。
 一般的なSSG（静的サイトジェネレータ）を使わず、記事の執筆からメタデータ管理までをTypst内部で完結させる仕組みです。
 
 なお本システムのスクリプトはWTFPLライセンスで公開していますが、あくまで個人利用を目的とした実験的なものです。
@@ -175,7 +175,7 @@ Typstファイル内からは`import`することで辞書としてデータを�
 #show: project.with(..meta)
 ```
 
-一方、ビルドスクリプト（Python）からは`typst query`コマンドを使用することで同じ情報をJSON形式で取得できます。
+一方、ビルドスクリプト（Python）からは`typst query`コマンドを使用することで同じ情報をJSONで取得できます。
 
 ```py
 result = subprocess.run(
@@ -187,6 +187,36 @@ result = subprocess.run(
 )
 data = json.loads(result.stdout)
 ```
+dataはこんな感じ: 
+```json
+[
+	{
+		"func": "metadata",
+		"value": {
+			"Typstでブログを書く": {
+				"title": "Typstでブログを書く",
+				"create": "datetime(year: 2025, month: 12, day: 14)",
+				"update": "datetime(year: 2025, month: 12, day: 21)",
+				"description": "Typst v0.14の新機能を使って、Typstだけでブログシステムを構築する試み。",
+				"tags": [
+					"Typst",
+					"HTML"
+				]
+			},
+			"テスト": {
+				"title": "テスト",
+				"create": "datetime(year: 2025, month: 12, day: 12)",
+				"update": null,
+				"description": "サイトの表示テスト",
+				"tags": [
+					"テスト"
+				]
+			}
+		},
+		"label": "<post-list>"
+	}
+]
+```
 
 これにより、MarkdownのFrontmatterのようなメタデータ管理をTypstの文法だけで統一して行えるようになりました。
 
@@ -196,8 +226,8 @@ HTMLエクスポートは発展途上のため数式や脚注などで工夫が�
 
 === 数式(Math)をSVG化して埋め込む
 
-現状、数式のHTML化は完全ではありません。
-そこで`html.frame`を使って数式を一度フレーム（画像扱い）にし、SVGとしてHTML内に埋め込むことで表示しています。
+現状、数式をHTMLに変換することはできないようです。
+これについては、`html.frame`を使用して数式を一度フレーム（画像扱い）にし、SVGとしてHTML内に埋め込む回避方法が#link("https://github.com/typst/typst/issues/721#issuecomment-2817289426")[Typstのissueに紹介されていた]ためこの方法を採用しています。
 
 ```typc
 show math.equation.where(block: false): it => {
@@ -241,7 +271,7 @@ show footnote: it => {
 = まとめ
 
 TypstのHTML生成機能はまだ実験的な側面もありますが、個人のブログやドキュメントサイト構築には十分実用できるレベルに達していると感じました。
-何より、普段のドキュメント作成で慣れ親しんだTypst記法がそのままWebサイトとして出力される体験は、非常に快適です。
+何より、普段のドキュメント作成で慣れ親しんだTypst記法がそのままWebサイトとして出力される体験は非常に快適です。
 
 皆さんもぜひ、Typstで自分だけのWebサイトを作ってみてください！
 
