@@ -13,6 +13,7 @@ METADATA_LABEL = "<post-list>"
 BASE_URL = "https://bibouroku.minimarimo3.jp"  # あなたのドメイン
 STYLE_CSS = "style.css"  # 共通CSSのファイル名
 SCRIPT_JS = "script.js"  # 共通JSのファイル名
+ROBOTS_TXT = "robots.txt"  # robots.txtのファイル名
 
 # コピーする静的ファイルの拡張子（必要に応じて追加）
 STATIC_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".pdf", ".js"}
@@ -128,6 +129,13 @@ def build():
         print("✅ JSコピー完了")
     else:
         print("⚠️ script.js がルートに見つかりません（public/script.jsとして既に存在するならOK）")
+
+    # robots.txtコピー
+    if os.path.exists(ROBOTS_TXT):
+        shutil.copy2(ROBOTS_TXT, "public/robots.txt")
+        print("✅ robots.txtコピー完了")
+    else:
+        print("⚠️ robots.txt がルートに見つかりません（public/robots.txtとして既に存在するならOK）")
 
 
     # 4. RSSフィード & サイトマップ生成

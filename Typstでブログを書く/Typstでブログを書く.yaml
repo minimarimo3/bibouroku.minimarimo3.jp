@@ -1,0 +1,35 @@
+Typst_Typst_Typst_0_14_Now_accessible_Ty:
+  type: web
+  title: "Typst: Typst 0.14: Now accessible – Typst Blog"
+  date: 2025-10-24
+  author:
+    - "Mädje, Laurenz"
+    - "Haug, Martin"
+  url:
+    value: "https://typst.app/blog/2025/typst-0.14#richer-html-export:~:text=Most%20semantic%20elements%20(those%20from%20the%20Model%20category)%20are%20now%20properly%20mapped%20to%20semantic%20HTML.%20We%27ve%20also%20improved%20handling%20of%20textual%20content%20in%20HTML%20export."
+    date: 2025-12-19
+  abstract: "Typst 0.14 is out now. With accessibility by default, PDFs as images, character-level justification, and more, it has everything you need to move from draft to..."
+  language: en
+  parent:
+    type: web
+    title: Typst
+
+GitHub_HTML_Export_Issue_721_typst_typst:
+  type: web
+  title: "HTML Export · Issue #721 · typst/typst"
+  url:
+    value: "https://github.com/typst/typst/issues/721#issuecomment-2817289426"
+    date: 2025-12-21
+  abstract: "This is all very much my draft notes currently but will be worked upon in the comming days, so take everything with a grain of salt. tl;dr This is looking really promising already in terms of trans..."
+  language: en
+  parent:
+    type: web
+    title: GitHub
+
+json_org_JSON:
+  type: web
+  title: JSON
+  url:
+    value: "https://www.json.org/json-ja.html#:~:text=%E6%96%87%E5%AD%97%E5%88%97%E3%81%AF%E3%80%812%E9%87%8D%E5%BC%95%E7%94%A8%E7%AC%A6%E3%81%A7%E5%9B%B2%E3%82%8F%E3%82%8C%E3%81%A6%E3%83%90%E3%83%83%E3%82%AF%E3%82%B9%E3%83%A9%E3%83%83%E3%82%B7%E3%83%A5%E3%82%A8%E3%82%B9%E3%82%B1%E3%83%BC%E3%83%97%E3%81%95%E3%82%8C%E3%81%9F%E3%82%BC%E3%83%AD%E6%96%87%E5%AD%97%E4%BB%A5%E4%B8%8A%E3%81%AE%E3%83%A6%E3%83%8B%E3%82%B3%E3%83%BC%E3%83%89%E6%96%87%E5%AD%97%E3%81%AE%E9%9B%86%E3%81%BE%E3%82%8A%E3%81%A7%E3%81%99%E3%80%82%E4%B8%80%E3%81%A4%E3%81%AE%E6%96%87%E5%AD%97%E3%82%82%E3%80%81%E4%B8%80%E3%81%A4%E3%81%AE%E6%96%87%E5%AD%97%E5%88%97%E3%81%A8%E3%81%97%E3%81%A6%E8%A1%A8%E3%81%95%E3%82%8C%E3%81%BE%E3%81%99%E3%80%82%E6%96%87%E5%AD%97%E5%88%97%E3%81%AF%E3%80%81C%E3%81%BE%E3%81%9F%E3%81%AFJava%E3%81%AE%E6%96%87%E5%AD%97%E5%88%97%E3%81%AB%E3%82%88%E3%81%8F%E4%BC%BC%E3%81%A6%E3%81%84%E3%81%BE%E3%81%99%E3%80%82"
+    date: 2025-12-21
+

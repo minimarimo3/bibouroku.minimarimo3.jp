@@ -331,7 +331,7 @@
             html.section(class: "related-posts", {
               html.h2(class: "section-title", "その他の記事")
               // 記事タイトルをシードにしてシャッフル（リビルドしても結果が変わらないようにする）
-              let rng = gen-rng(int(title.clusters().map(str.to-unicode).map(str).join().slice(0, 14)))
+              let rng = gen-rng(int(title.clusters().map(str.to-unicode).map(str).join().slice(0, calc.min(14, title.clusters().len()))))
               let (_, indices) = shuffle-f(rng, range(other-posts.len()))
               // 最大3件を取得
               let picks = indices.slice(0, calc.min(3, indices.len())).map(i => other-posts.at(i))
