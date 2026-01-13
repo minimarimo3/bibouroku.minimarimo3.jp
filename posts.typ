@@ -28,11 +28,6 @@
 // --- 記事リスト ---
 #let post-data = (
   post(
-    "日記",
-    datetime.today(),
-    desc: "日記", 
-  ),
-  post(
     "Typstでブログを書く",
     d(2025, 12, 14),
     update: d(2025, 12, 21),

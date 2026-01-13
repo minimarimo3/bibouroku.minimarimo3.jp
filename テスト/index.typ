@@ -2,6 +2,8 @@
 #import "../posts.typ": post-data
 #let meta = post-data.at("テスト")
 #show: project.with(..meta)
+#import "/template/lib.typ": pkm
+#show: pkm
 
 
 = TypstのHTMLエクスポート機能のテスト
@@ -111,6 +113,10 @@ counterは使えるため自分で実装することになります。#[@footnot
 == サイトの埋め込み
 
 #raw_html(`<iframe width="560" height="315" src="https://www.youtube.com/embed/eWw8HoNkVkU?si=t5T43P_gid2S7B5z" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`)
+
+== その他
+
+|/Typstでブログを書く/index, Typstでブログを書く|
 
 
 #bibliography("reference.bib")
