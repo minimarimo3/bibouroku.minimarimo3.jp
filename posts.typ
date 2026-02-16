@@ -24,9 +24,14 @@
   )
 }
 
-
 // --- 記事リスト ---
 #let post-data = (
+  post(
+    "スマホのブラウザでYouTube Shortをブロックする",
+    d(2026, 02, 16),
+    desc: "Vivaldiのトラッカーブロック機能でYouTubeショートを非表示にした際の備忘録",
+    tags: ("YouTube ショート", "Vivaldi"),
+  ),
   post(
     "Typstでブログを書く",
     d(2025, 12, 14),
