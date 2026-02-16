@@ -9,7 +9,11 @@
 
 = 使い方
 
-Vivaldiブラウザの設定から「トラッカー・広告ブロック」→「個別設定」または「トラッカーブロックソース管理」を選択（どっちでも大丈夫。両方やる必要はありません。）→「新しいソースを追加」を押して出てきた入力欄に`https://gist.githubusercontent.com/minimarimo3/dc12d0ed2317da31cb68aa46657ad5b2/raw/12b3f4327e701d8df89ac10a791152e2017d9156/gistfile1.txt`を貼り付けてインポート。
+Vivaldiブラウザの設定から「トラッカー・広告ブロック」→「個別設定」または「トラッカーブロックソース管理」を選択（どっちでも大丈夫。両方やる必要はありません。）→「新しいソースを追加」を押して出てきた入力欄に下のURLを貼り付けてインポート。
+
+```
+https://gist.githubusercontent.com/minimarimo3/dc12d0ed2317da31cb68aa46657ad5b2/raw/12b3f4327e701d8df89ac10a791152e2017d9156/gistfile1.txt
+```
 
 これでYouTubeを開いた後一回再読み込みすることでショート動画が消えるようになります。
 
