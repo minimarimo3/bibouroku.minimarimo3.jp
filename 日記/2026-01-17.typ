@@ -1,12 +1,12 @@
 #import "/template/lib.typ": pkm
 #show: pkm
 
-= {{date}}の日記
+= 2026-01-17の日記
 
 == 目標
 
-- [ ] {{1}}
-- [ ] {{2}}
+- [ ] nijimi作成
+- [ ] yuukeiあれ
 
 == 進捗
 

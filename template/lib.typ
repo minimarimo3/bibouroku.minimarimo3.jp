@@ -1,12 +1,12 @@
 // https://typst.app/docs/reference/visualize/image/#:~:text=Supported%20formats%20are%20%22png%22%2C%20%22jpg%22%2C%20%22gif%22%2C%20%22svg%22%2C%20%22pdf%22%2C%20%22webp%22%20as%20well%20as%20raw%20pixel%20data.
 #let image-extensions = (
-  ".png", ".jpg", ".jpeg", ".gif", ".svg", "pdf", ".webp"
+  ".png", ".jpg", ".jpeg", ".gif", ".svg", ".pdf", ".webp"
 )
 
 // リンクまたは画像に変換する関数
 #let link-or-image(raw-text) = context {
   let content = raw-text.trim("|")
-  let parts = content.split(",")
+  let parts = content.split(", ")
   let path-str = parts.at(0).trim()
   
   let alias-text = none
