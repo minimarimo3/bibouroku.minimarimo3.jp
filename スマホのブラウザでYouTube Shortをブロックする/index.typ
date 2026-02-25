@@ -1,7 +1,7 @@
 #import "../template.typ": project, note, note, tip, important, warning, caution, env
 #import "../posts.typ": post-data
-#let meta = post-data.at("スマホのブラウザでYouTube Shortをブロックする")
-#show: project.with(..meta)
+// #let meta = post-data.at("スマホのブラウザでYouTube Shortをブロックする")
+// #show: project.with(..meta)
 
 #env(
   ("Vivaldiブラウザ", "7.8.3931.96", "Android"),
