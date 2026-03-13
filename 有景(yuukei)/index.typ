@@ -40,9 +40,10 @@
 - [x] リマインダー、他アプリとの連携。
   これはそもそも拡張機能で可能にすべき
 - [ ] デジタル調の演出
-  - [ ] フォント: #link("https://fonts.google.com/specimen/DotGothic16")[DotGothic 16]がいい感じ
+  - [x] フォント: #link("https://fonts.google.com/specimen/DotGothic16")[DotGothic 16]がいい感じ
   - [ ] ウィンドウ: 以下のパターンがある
-    - 背景の絵だけを用意してデフォルトの操作
+    - [x] 背景の絵だけを用意してデフォルトの操作
+      https://github.com/minimarimo3/yuukei-theme-editor でよさそう。
     - アセットバンドルとしてロードして
   - [ ] アウトライン
 
