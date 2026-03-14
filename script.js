@@ -40,3 +40,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+  const footnoteWrappers = document.querySelectorAll('.footnote-wrapper');
+
+  footnoteWrappers.forEach(wrapper => {
+    wrapper.addEventListener('click', (e) => {
+      // 他の注釈が開いていたら先に閉じる
+      footnoteWrappers.forEach(w => {
+        if (w !== wrapper) w.classList.remove('is-active');
+      });
+      
+      // クリックされた注釈の開閉状態を切り替え
+      wrapper.classList.toggle('is-active');
+      
+      // イベントの伝播を止め、下の「外側タップ判定」が誤爆するのを防ぐ
+      e.stopPropagation();
+    });
+  });
+
+  // 注釈以外の場所（画面の余白など）をタップしたらすべての注釈を閉じる
+  document.addEventListener('click', () => {
+    footnoteWrappers.forEach(wrapper => {
+      wrapper.classList.remove('is-active');
+    });
+  });
+});
