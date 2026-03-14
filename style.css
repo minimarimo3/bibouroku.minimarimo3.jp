@@ -537,15 +537,21 @@ tbody tr:nth-of-type(even) {
   opacity: 1;
 }
 
+.footnote-content {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    transform: none; /* 中央寄せの translateX(-50%) を解除 */
+    width: auto;
+    max-width: none;
+    z-index: 9999;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    border: 1px solid var(--border-color);
+  }
+
 .footnote-content::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  margin-left: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: #333 transparent transparent transparent;
+  display: none;
 }
 
 .section-divider {
