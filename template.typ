@@ -69,6 +69,61 @@
 #let warning(body) = _alert-box("warning", "注意", "⚠️", body)
 #let caution(body) = _alert-box("caution", "警告", "🛑", body)
 
+// YouTube動画のレスポンシブ埋め込み用関数 (URL自動パース対応版)
+#let youtube(url-or-id, start: none) = context {
+  // 正規表現で様々な形式のYouTube URLから11桁の動画IDを抽出する
+  // 対応パターン:
+  // - https://www.youtube.com/watch?v=ID
+  // - https://youtu.be/ID
+  // - https://www.youtube.com/embed/ID
+  // - プレイリスト等が含まれるURL (例: watch?v=ID&list=...)
+  let m = url-or-id.match(regex("(?:v=|youtu\.be/|embed/)([a-zA-Z0-9_-]{11})"))
+  
+  let clean-id = if m != none {
+    // 正規表現にマッチした場合は、キャプチャグループ1（ID部分）を取得
+    m.captures.at(0)
+  } else {
+    // マッチしない場合（IDのみが直接渡された場合などを想定）のフォールバック
+    url-or-id.split("?").at(0).split("&").at(0)
+  }
+
+  // クエリパラメータの構築
+  let query-params = ()
+  if start != none {
+    query-params.push("start=" + str(start))
+  }
+
+  let query-string = if query-params.len() > 0 {
+    "?" + query-params.join("&")
+  } else {
+    ""
+  }
+
+  let embed-url = "https://www.youtube.com/embed/" + clean-id + query-string
+
+  // PDF出力時のフォールバック処理
+  if target() == "paged" {
+    return [
+      #align(center)[
+        #rect(inset: 10pt, stroke: luma(150), radius: 4pt)[
+          ▶ YouTube動画: #link("https://youtu.be/" + clean-id)
+        ]
+      ]
+    ]
+  }
+  
+  // HTML出力時
+  html.div(class: "video-wrapper", {
+    html.elem("iframe", attrs: (
+      src: embed-url,
+      title: "YouTube video player",
+      frameborder: "0",
+      allow: "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share",
+      allowfullscreen: ""
+    ))
+  })
+}
+
 // --- アイコンデータ (Simple Icons) ---
 #let icons = (
   // X (https://simpleicons.org/?q=X&modal=icon)
