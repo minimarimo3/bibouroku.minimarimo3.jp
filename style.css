@@ -508,6 +508,11 @@ tbody tr:nth-of-type(even) {
   font-size: 0.8em;
   vertical-align: super;
   margin: 0 2px;
+  
+  /* テキスト選択とタップ時のハイライトを無効化し、OSの不要なポップアップを防ぐ */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .footnote-content {
@@ -546,6 +551,21 @@ tbody tr:nth-of-type(even) {
   border-width: 5px;
   border-style: solid;
   border-color: #333 transparent transparent transparent;
+}
+
+/* --- 表示トリガーの設定 --- */
+/* JSで付与されるクラスによる表示 (全デバイス共通) */
+.footnote-wrapper.is-active .footnote-content {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* PC（マウスが使えるデバイス）のみ、hoverでも表示させる */
+@media (hover: hover) and (pointer: fine) {
+  .footnote-wrapper:hover .footnote-content {
+    visibility: visible;
+    opacity: 1;
+  }
 }
 
 .section-divider {
@@ -704,12 +724,12 @@ tbody tr:nth-of-type(even) {
 }
 
 @media (max-width: 900px) {
-  .footnote-content {
+.footnote-content {
     position: fixed;
     bottom: 20px;
     left: 20px;
-    right: 20px;
-    transform: none; /* 中央寄せの translateX(-50%) を解除 */
+    right: 20px; /* 左右20pxで自動的に幅を調整 */
+    transform: none; /* translateXを解除 */
     width: auto;
     max-width: none;
     z-index: 9999;
@@ -717,10 +737,10 @@ tbody tr:nth-of-type(even) {
     border: 1px solid var(--border-color);
   }
 
-  /* ボトムシート化に伴い、吹き出しの尻尾(三角)は不要になるため非表示化 */
   .footnote-content::after {
-    display: none;
+    display: none; /* ボトムシートなので尻尾は隠す */
   }
+  
   .site-container {
     display: block;
     padding: 20px 15px;
