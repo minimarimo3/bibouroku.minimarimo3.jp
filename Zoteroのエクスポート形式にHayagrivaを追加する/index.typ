@@ -1,7 +1,15 @@
-#import "../template.typ": project, note, note, tip, important, warning, caution, env
-#import "../posts.typ": post-data
-#let meta = post-data.at("Zoteroのエクスポート形式にHayagrivaを追加する")
-#show: project.with(..meta)
+#import "../template.typ": article, d, note, tip, important, warning, caution, env
+
+#let meta = (
+  slug: "Zoteroのエクスポート形式にHayagrivaを追加する",
+  title: "Zoteroのエクスポート形式にHayagrivaを追加する",
+  create: d(2026, 3, 14),
+  update: d(2026, 3, 24),
+  description: "Typstで文献リストとして使用可能なHayagriva形式（YAML）ですがZoteroで直接エクスポートできないため、いったんbibファイルでエクスポートしてからhayagriva cliで変換する必要があります。地味に手間なのでZoteroから直接Hayagrivaでのエクスポートを可能にする拡張機能を作成しました。",
+)
+
+#metadata(meta) <post-meta>
+#show: article.with(..meta)
 
 #env(
   ("Typst", "0.14.2", "TYPST_FEATURES=html"),

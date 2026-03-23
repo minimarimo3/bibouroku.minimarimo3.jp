@@ -1,8 +1,16 @@
-#import "../template.typ": project, note, note, tip, important, warning, caution, raw_html, youtube
-#import "../posts.typ": post-data
-#let meta = post-data.at("テスト")
-#show: project.with(..meta)
-#import "/template/lib.typ": pkm
+#import "../template.typ": article, d, note, tip, important, warning, caution, raw_html, youtube
+#import "/typst/components/pkm.typ": pkm
+
+#let meta = (
+  slug: "テスト",
+  title: "テスト",
+  create: d(2025, 12, 12),
+  description: "サイトの表示テスト",
+  tags: ("テスト",),
+)
+
+#metadata(meta) <post-meta>
+#show: article.with(..meta)
 #show: pkm
 
 

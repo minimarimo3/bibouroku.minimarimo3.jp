@@ -1,4 +1,4 @@
-#import "/template/lib.typ": pkm
+#import "/typst/components/pkm.typ": pkm
 #show: pkm
 
 = 2026-01-17の日記

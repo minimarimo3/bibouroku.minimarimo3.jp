@@ -1,5 +1,8 @@
 name: Deploy to GitHub Pages
 
+env:
+  TYPST_VERSION: 0.14.2
+
 on:
   # mainブランチにプッシュされたときに実行
   push:
@@ -32,11 +35,9 @@ jobs:
         with:
           python-version: '3.x'
 
-      # Typstのインストール (最新版を取得)
+      # Typstのインストール
       - name: Install Typst
         run: |
-          # 最新のリリース情報を取得してダウンロードURLを特定
-          TYPST_VERSION=$(curl -s https://api.github.com/repos/typst/typst/releases/latest | grep tag_name | cut -d '"' -f 4)
           echo "Installing Typst $TYPST_VERSION..."
           
           wget -q https://github.com/typst/typst/releases/download/$TYPST_VERSION/typst-x86_64-unknown-linux-musl.tar.xz
@@ -48,7 +49,7 @@ jobs:
 
       # build.py を実行して静的サイトを生成
       - name: Build Site
-        run: python build.py
+        run: python3 build.py
 
       # 生成された public フォルダをアップロード
       - name: Upload artifact

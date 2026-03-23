@@ -1,7 +1,16 @@
-#import "../template.typ": project, note, note, tip, important, warning, caution, env
-#import "../posts.typ": post-data
-// #let meta = post-data.at("有景(yuukei)")
-// #show: project.with(..meta)
+#import "../template.typ": article, d, note, tip, important, warning, caution, env
+
+#let meta = (
+  slug: "有景(yuukei)",
+  title: "有景(yuukei)",
+  create: d(2026, 3, 24),
+  description: "デスクトップマスコットアプリの実装メモ。",
+  tags: ("開発メモ",),
+  draft: true,
+)
+
+#metadata(meta) <post-meta>
+#show: article.with(..meta)
 
 = 実装すること
 

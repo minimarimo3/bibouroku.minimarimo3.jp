@@ -1,163 +1,258 @@
-import subprocess
+from __future__ import annotations
+
+import datetime as dt
 import json
 import re
-import os
 import shutil
-import datetime
+import subprocess
 import sys
+from pathlib import Path
 from xml.sax.saxutils import escape
 
-# --- 設定 ---
-ROOT_DIR = "."
-POSTS_FILE = "posts.typ"
-METADATA_LABEL = "<post-list>"
-BASE_URL = "https://bibouroku.minimarimo3.jp"  # あなたのドメイン
-STYLE_CSS = "style.css"  # 共通CSSのファイル名
-SCRIPT_JS = "script.js"  # 共通JSのファイル名
-ROBOTS_TXT = "robots.txt"  # robots.txtのファイル名
+ROOT_DIR = Path(__file__).resolve().parent
+OUTPUT_DIR = ROOT_DIR / "public"
+GENERATED_POSTS_FILE = ROOT_DIR / "typst" / "generated" / "posts.typ"
+BASE_URL = "https://bibouroku.minimarimo3.jp"
+STYLE_CSS = ROOT_DIR / "style.css"
+SCRIPT_JS = ROOT_DIR / "script.js"
+ROBOTS_TXT = ROOT_DIR / "robots.txt"
+POST_METADATA_LABEL = "<post-meta>"
+EXCLUDED_DIRS = {".git", ".github", "public", "template", "typst", "__pycache__"}
+STATIC_EXTENSIONS = {
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".gif",
+    ".svg",
+    ".webp",
+    ".pdf",
+    ".js",
+    ".yaml",
+    ".yml",
+    ".bib",
+    ".txt",
+}
 
-# コピーする静的ファイルの拡張子（必要に応じて追加）
-STATIC_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".pdf", ".js"}
 
-def build():
-    print("🚀 ビルドを開始します...")
-    has_error = False  # エラー状態を追跡するフラグ
-    
-    # publicフォルダのリセット（必要ならコメントアウトを外す）
-    if os.path.exists("public"):
-        shutil.rmtree("public")
-    os.makedirs("public", exist_ok=True)
+def run_typst(*args: str, capture_output: bool = False) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        ["typst", *args],
+        cwd=ROOT_DIR,
+        check=True,
+        text=True,
+        encoding="utf-8",
+        capture_output=capture_output,
+    )
 
-    # 1. 記事リストの取得
-    try:
-        result = subprocess.run(
-            ["typst", "query", "--field", "value", POSTS_FILE, METADATA_LABEL],
-            capture_output=True,
-            text=True,
-            check=True,
-            encoding="utf-8"
+
+def parse_typst_date(raw: str | None) -> dt.datetime | None:
+    if not raw:
+        return None
+
+    match = re.search(r"year:\s*(\d+),\s*month:\s*(\d+),\s*day:\s*(\d+)", raw)
+    if not match:
+        return None
+
+    return dt.datetime(
+        int(match.group(1)),
+        int(match.group(2)),
+        int(match.group(3)),
+        tzinfo=dt.timezone.utc,
+    )
+
+
+def typst_string(value: str) -> str:
+    escaped = value.replace("\\", "\\\\").replace('"', '\\"')
+    return f'"{escaped}"'
+
+
+def format_typst_date(value: dt.datetime | None) -> str:
+    if value is None:
+        return "none"
+    return f"datetime(year: {value.year}, month: {value.month}, day: {value.day})"
+
+
+def discover_post_files() -> list[Path]:
+    post_files: list[Path] = []
+    for path in ROOT_DIR.rglob("index.typ"):
+        if path == ROOT_DIR / "index.typ":
+            continue
+        if any(part in EXCLUDED_DIRS for part in path.relative_to(ROOT_DIR).parts):
+            continue
+        post_files.append(path)
+    return sorted(post_files)
+
+
+def load_post_metadata(path: Path) -> dict | None:
+    result = run_typst(
+        "query",
+        "--root",
+        ".",
+        "--features",
+        "html",
+        "--field",
+        "value",
+        str(path.relative_to(ROOT_DIR)),
+        POST_METADATA_LABEL,
+        capture_output=True,
+    )
+    data = json.loads(result.stdout)
+    if not data:
+        return None
+    return data[0]
+
+
+def collect_posts() -> list[dict]:
+    posts: list[dict] = []
+    seen_slugs: set[str] = set()
+
+    for source_file in discover_post_files():
+        meta = load_post_metadata(source_file)
+        if meta is None:
+            continue
+
+        slug = meta.get("slug")
+        title = meta.get("title")
+        create = parse_typst_date(meta.get("create"))
+        update = parse_typst_date(meta.get("update"))
+        description = meta.get("description")
+        tags = tuple(meta.get("tags", []))
+        draft = bool(meta.get("draft", False))
+
+        if not slug:
+            raise ValueError(f"{source_file.relative_to(ROOT_DIR)}: slug is required")
+        if slug in seen_slugs:
+            raise ValueError(f"duplicate slug: {slug}")
+        seen_slugs.add(slug)
+
+        if not title:
+            raise ValueError(f"{source_file.relative_to(ROOT_DIR)}: title is required")
+        if create is None:
+            raise ValueError(f"{source_file.relative_to(ROOT_DIR)}: create is required")
+        if not description:
+            raise ValueError(f"{source_file.relative_to(ROOT_DIR)}: description is required")
+
+        posts.append(
+            {
+                "slug": slug,
+                "title": title,
+                "create": create,
+                "update": update,
+                "description": description,
+                "tags": tags,
+                "draft": draft,
+                "source_file": source_file,
+                "source_dir": source_file.parent,
+            }
         )
-        posts_dict = json.loads(result.stdout)[0]
-        print(f"📄 {len(posts_dict)} 件の記事が見つかりました。\n")
-    except Exception as e:
-        print(f"❌ 致命的なエラー: 記事リストの取得に失敗しました。\n{e}")
-        sys.exit(1)  # 記事リストが取得できない場合は以降の処理が不可能なため即時終了
 
-    # 記事リストを日付順にソート（新しい順）
-    sorted_posts = []
-    for dir_path, meta in posts_dict.items():
-        meta["dir_path"] = dir_path
-        # 日付のパース処理
-        create_date = meta.get("create")
-        match = re.search(r"year:\s*(\d+),\s*month:\s*(\d+),\s*day:\s*(\d+)", create_date)
-        if match:
-            dt = datetime.datetime(
-                int(match.group(1)),
-                int(match.group(2)),
-                int(match.group(3))
-            )
-        meta["dt"] = dt
-        sorted_posts.append(meta)
-
-    sorted_posts.sort(key=lambda x: x["dt"], reverse=True)
+    posts.sort(key=lambda post: post["create"], reverse=True)
+    return posts
 
 
-    # 2. 各記事のビルド & 静的ファイルコピー
-    for post in sorted_posts:
-        dir_path = post["dir_path"]
-        title = post.get("title", "無題")
-        
-        # パス設定
-        input_dir = os.path.join(ROOT_DIR, dir_path)
-        input_file = os.path.join(input_dir, "index.typ")
-        output_dir = os.path.join("public", dir_path)
-        output_file = os.path.join(output_dir, "index.html")
-        
-        if not os.path.exists(input_file):
-            print(f"⚠️ スキップ: ファイルが見つかりません ({input_file})")
+def write_generated_posts(posts: list[dict]) -> None:
+    published_posts = [post for post in posts if not post["draft"]]
+
+    lines = ["#let post-data = ("]
+    for post in published_posts:
+        tag_value = (
+            "(" + ", ".join(typst_string(tag) for tag in post["tags"]) + ("," if len(post["tags"]) == 1 else "") + ")"
+            if post["tags"]
+            else "()"
+        )
+        lines.extend(
+            [
+                f"  {typst_string(post['slug'])}: (",
+                f"    title: {typst_string(post['title'])},",
+                f"    create: {format_typst_date(post['create'])},",
+                f"    update: {format_typst_date(post['update'])},",
+                f"    description: {typst_string(post['description'])},",
+                f"    tags: {tag_value},",
+                "  ),",
+            ]
+        )
+    lines.append(")")
+    GENERATED_POSTS_FILE.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def copy_post_assets(post: dict, output_dir: Path) -> None:
+    for asset in post["source_dir"].rglob("*"):
+        if not asset.is_file():
+            continue
+        if asset == post["source_file"]:
+            continue
+        if asset.suffix.lower() not in STATIC_EXTENSIONS:
             continue
 
-        os.makedirs(output_dir, exist_ok=True)
-        print(f"🔨 Compiling: {title}")
-
-        # (A) Typstコンパイル
-        try:
-            subprocess.run([
-                "typst", "compile", "--features", "html", "--format", "html",
-                "--root", ROOT_DIR, input_file, output_file
-            ], check=True)
-        except subprocess.CalledProcessError:
-            print(f"❌ コンパイル失敗: {title}")
-            has_error = True  # エラーを記録して次の記事へ
-            continue
-
-        # (B) 静的ファイル（画像など）のコピー
-        for filename in os.listdir(input_dir):
-            base, ext = os.path.splitext(filename)
-            if ext.lower() in STATIC_EXTENSIONS:
-                src = os.path.join(input_dir, filename)
-                dst = os.path.join(output_dir, filename)
-                shutil.copy2(src, dst)
-                print(f"  Example: {filename} をコピーしました")
-
-    # 3. 共通ファイルのビルド・コピー
-    print("\n🏠 Building static pages...")
-    
-    # トップページ
-    try:
-        subprocess.run(["typst", "compile", "--features", "html", "--format", "html", "--root", ROOT_DIR, "index.typ", "public/index.html"], check=True)
-    except subprocess.CalledProcessError:
-        print("❌ トップページのコンパイル失敗")
-        has_error = True
-
-    # 404ページ
-    if os.path.exists("404.typ"):
-        try:
-            subprocess.run(["typst", "compile", "--features", "html", "--format", "html", "--root", ROOT_DIR, "404.typ", "public/404.html"], check=True)
-            print("✅ 404ページ生成完了")
-        except subprocess.CalledProcessError:
-            print("❌ 404ページのコンパイル失敗")
-            has_error = True
-
-    # CSSコピー
-    if os.path.exists(STYLE_CSS):
-        shutil.copy2(STYLE_CSS, "public/style.css")
-        print("✅ CSSコピー完了")
-    else:
-        print("⚠️ style.css がルートに見つかりません（public/style.cssとして既に存在するならOK）")
-
-    # JSコピー
-    if os.path.exists(SCRIPT_JS):
-        shutil.copy2(SCRIPT_JS, "public/script.js")
-        print("✅ JSコピー完了")
-    else:
-        print("⚠️ script.js がルートに見つかりません（public/script.jsとして既に存在するならOK）")
-
-    # robots.txtコピー
-    if os.path.exists(ROBOTS_TXT):
-        shutil.copy2(ROBOTS_TXT, "public/robots.txt")
-        print("✅ robots.txtコピー完了")
-    else:
-        print("⚠️ robots.txt がルートに見つかりません（public/robots.txtとして既に存在するならOK）")
+        relative_path = asset.relative_to(post["source_dir"])
+        destination = output_dir / relative_path
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(asset, destination)
 
 
-    # 4. RSSフィード & サイトマップ生成
-    print("\n📡 Generating RSS & Sitemap...")
-    generate_rss(sorted_posts)
-    generate_sitemap(sorted_posts)
-    
-    # 最終的なエラーステータスの判定と終了コードの返却
-    if has_error:
-        print("\n❌ ビルド中に一つ以上のエラーが発生しました。ログを確認してください。")
-        sys.exit(1)
-    else:
-        print("\n✅ ビルド完了！")
+def build_post(post: dict) -> None:
+    output_dir = OUTPUT_DIR / post["slug"]
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_file = output_dir / "index.html"
+
+    print(f"🔨 Compiling: {post['title']}")
+    run_typst(
+        "compile",
+        "--features",
+        "html",
+        "--format",
+        "html",
+        "--root",
+        ".",
+        str(post["source_file"].relative_to(ROOT_DIR)),
+        str(output_file.relative_to(ROOT_DIR)),
+    )
+    copy_post_assets(post, output_dir)
 
 
-def generate_rss(posts):
-    rss_path = os.path.join("public", "feed.xml")
-    now = datetime.datetime.now(datetime.timezone.utc).strftime("%a, %d %b %Y %H:%M:%S GMT")
-    
+def copy_root_assets() -> None:
+    if STYLE_CSS.exists():
+        shutil.copy2(STYLE_CSS, OUTPUT_DIR / STYLE_CSS.name)
+    if SCRIPT_JS.exists():
+        shutil.copy2(SCRIPT_JS, OUTPUT_DIR / SCRIPT_JS.name)
+    if ROBOTS_TXT.exists():
+        shutil.copy2(ROBOTS_TXT, OUTPUT_DIR / ROBOTS_TXT.name)
+
+
+def build_static_pages() -> None:
+    run_typst(
+        "compile",
+        "--features",
+        "html",
+        "--format",
+        "html",
+        "--root",
+        ".",
+        "index.typ",
+        str((OUTPUT_DIR / "index.html").relative_to(ROOT_DIR)),
+    )
+
+    if (ROOT_DIR / "404.typ").exists():
+        run_typst(
+            "compile",
+            "--features",
+            "html",
+            "--format",
+            "html",
+            "--root",
+            ".",
+            "404.typ",
+            str((OUTPUT_DIR / "404.html").relative_to(ROOT_DIR)),
+        )
+
+    copy_root_assets()
+
+
+def generate_rss(posts: list[dict]) -> None:
+    published_posts = [post for post in posts if not post["draft"]]
+    rss_path = OUTPUT_DIR / "feed.xml"
+    now = dt.datetime.now(dt.timezone.utc).strftime("%a, %d %b %Y %H:%M:%S GMT")
+
     xml = f"""<?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0">
 <channel>
@@ -166,28 +261,25 @@ def generate_rss(posts):
   <description>Typstで作られた備忘録ブログ</description>
   <lastBuildDate>{now}</lastBuildDate>
 """
-    for post in posts:
-        title = escape(post.get("title", "No Title"))
-        link = f"{BASE_URL}/{post['dir_path']}/" # トレーリングスラッシュあり
-        desc = escape(post.get("description", ""))
-        # 日付フォーマット (RFC 822)
-        pub_date = post["dt"].strftime("%a, %d %b %Y 00:00:00 GMT")
-        
+    for post in published_posts:
+        link = f"{BASE_URL}/{post['slug']}/"
+        pub_date = post["create"].strftime("%a, %d %b %Y 00:00:00 GMT")
         xml += f"""  <item>
-    <title>{title}</title>
+    <title>{escape(post['title'])}</title>
     <link>{link}</link>
-    <description>{desc}</description>
+    <description>{escape(post['description'])}</description>
     <pubDate>{pub_date}</pubDate>
   </item>
 """
-    xml += "</channel>\n</rss>"
-    
-    with open(rss_path, "w", encoding="utf-8") as f:
-        f.write(xml)
 
-def generate_sitemap(posts):
-    sitemap_path = os.path.join("public", "sitemap.xml")
-    
+    xml += "</channel>\n</rss>"
+    rss_path.write_text(xml, encoding="utf-8")
+
+
+def generate_sitemap(posts: list[dict]) -> None:
+    published_posts = [post for post in posts if not post["draft"]]
+    sitemap_path = OUTPUT_DIR / "sitemap.xml"
+
     xml = f"""<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -195,20 +287,52 @@ def generate_sitemap(posts):
     <priority>1.0</priority>
   </url>
 """
-    for post in posts:
-        link = f"{BASE_URL}/{post['dir_path']}/"
-        last_mod = post["dt"].strftime("%Y-%m-%d")
-        
+    for post in published_posts:
+        link = f"{BASE_URL}/{post['slug']}/"
+        last_mod = (post["update"] or post["create"]).strftime("%Y-%m-%d")
         xml += f"""  <url>
     <loc>{link}</loc>
     <lastmod>{last_mod}</lastmod>
     <priority>0.8</priority>
   </url>
 """
+
     xml += "</urlset>"
-    
-    with open(sitemap_path, "w", encoding="utf-8") as f:
-        f.write(xml)
+    sitemap_path.write_text(xml, encoding="utf-8")
+
+
+def build() -> None:
+    print("🚀 ビルドを開始します...")
+
+    if OUTPUT_DIR.exists():
+        shutil.rmtree(OUTPUT_DIR)
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    posts = collect_posts()
+    published_count = sum(1 for post in posts if not post["draft"])
+    print(f"📄 {len(posts)} 件の記事メタデータを取得しました（公開 {published_count} 件）。")
+
+    write_generated_posts(posts)
+
+    for post in posts:
+        if post["draft"]:
+            print(f"📝 Draft skip: {post['title']}")
+            continue
+        build_post(post)
+
+    print("\n🏠 Building static pages...")
+    build_static_pages()
+
+    print("\n📡 Generating RSS & Sitemap...")
+    generate_rss(posts)
+    generate_sitemap(posts)
+
+    print("\n✅ ビルド完了！")
+
 
 if __name__ == "__main__":
-    build()
+    try:
+        build()
+    except Exception as exc:
+        print(f"\n❌ ビルド失敗: {exc}", file=sys.stderr)
+        sys.exit(1)

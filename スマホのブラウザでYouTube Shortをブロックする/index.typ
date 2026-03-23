@@ -1,7 +1,16 @@
-#import "../template.typ": project, note, note, tip, important, warning, caution, env
-#import "../posts.typ": post-data
-// #let meta = post-data.at("スマホのブラウザでYouTube Shortをブロックする")
-// #show: project.with(..meta)
+#import "../template.typ": article, d, note, tip, important, warning, caution, env
+
+#let meta = (
+  slug: "スマホのブラウザでYouTube Shortをブロックする",
+  title: "スマホのブラウザでYouTube Shortをブロックする",
+  create: d(2026, 3, 24),
+  description: "スマホのブラウザでYouTube Shortを目に入れないようにするためのメモ。",
+  tags: ("Vivaldi", "YouTube"),
+  draft: true,
+)
+
+#metadata(meta) <post-meta>
+#show: article.with(..meta)
 
 #env(
   ("Vivaldiブラウザ", "7.8.3931.96", "Android"),

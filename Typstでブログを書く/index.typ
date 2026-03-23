@@ -1,7 +1,16 @@
-#import "../template.typ": project, note, note, tip, important, warning, caution, env
-#import "../posts.typ": post-data
-#let meta = post-data.at("Typstでブログを書く")
-#show: project.with(..meta)
+#import "../template.typ": article, d, note, tip, important, warning, caution, env
+
+#let meta = (
+  slug: "Typstでブログを書く",
+  title: "Typstでブログを書く",
+  create: d(2025, 12, 14),
+  update: d(2025, 12, 21),
+  description: "Typst 0.14でHTML出力が強化されたのを機に執筆からデータ管理までTypstだけで完結するブログシステムを自作してみました。記事ごとにメタデータを持たせる仕組みや、数式・脚注の表示崩れへの対処法など、Typst中心のサイト構築方法をまとめました。",
+  tags: ("Typst", "HTML"),
+)
+
+#metadata(meta) <post-meta>
+#show: article.with(..meta)
 
 #note[
   この記事は#link("https://qiita.com/advent-calendar/2025/typst")[Typst Advent Calender 2025]の23日目の記事です。
@@ -31,25 +40,24 @@ Markdownのような手軽な書き心地でありながら、図表や脚注、
 
 本ブログのファイル構成は以下の通りです（#[@ファイル構成]）。
 
-ルートディレクトリには、システムの中核となる5つのファイルを配置しています。
+ルートディレクトリには、ビルドの起点となるファイルを配置しています。
 - `index.typ`: トップページ（https://bibouroku.minimarimo3.jp）の生成元。
 - `style.css`: サイト全体のデザイン定義。
-- `posts.typ`: 全記事のメタデータ（タイトル、公開日、概要など）を集約管理するデータベース的なファイル。
-- `template.typ`: 記事の共通レイアウトやデザインを定義したテンプレート。
-- `build.py`: ビルドスクリプト。`posts.typ` から情報を読み取り、ディレクトリ走査やTypstコンパイル、静的ファイルの配置を一括で行います。
+- `template.typ`: Typst側の公開APIをまとめたエントリーポイント。
+- `typst/`: レイアウト、ウィジェット、執筆支援関数などの実装を分割して配置するディレクトリ。
+- `build.py`: 各記事の先頭に書いたメタデータを読み取り、Typstコンパイルや静的ファイルの配置を一括で行うビルドスクリプト。
 
 ビルドの成果物は `public` ディレクトリに出力され、この中身がそのままWebサイトとして公開されます。
 
-各記事は個別のディレクトリで管理しており、そこに執筆した `index.typ` を配置して `posts.typ` に登録することで、ビルド対象として認識される仕組みです。
+各記事は個別のディレクトリで管理しており、そこに執筆した `index.typ` の先頭でメタデータを定義することでビルド対象として認識される仕組みです。
 なお、記事ファイル名を `index.typ` としているのは、ビルド後の `index.html`（ディレクトリへのアクセス時にデフォルトで表示されるファイル）に対応させるためです。
 
 #figure(caption: [当ブログのファイル構成], ```sh
 BIBOUROKU.MINIMARIMO3.JP
 │  index.typ      # トップページ
 │  style.css      # サイト全体のテーマを設定するファイル
-│  posts.typ      # 公開対象の記事のメタデータを記述するファイル
-│  template.typ   # 記事のテンプレート
-│  build.py       # posts.typのデータをもとにディレクトリを走査し、ビルドと添付ファイルの移動を行うスクリプト
+│  template.typ   # 記事から読み込むTypst API
+│  build.py       # 各記事のメタデータを走査してビルドするスクリプト
 │
 ├─public          # ビルド後の出力先
 │  │  index.html
@@ -65,6 +73,11 @@ BIBOUROKU.MINIMARIMO3.JP
 │          index.html
 │          index.pdf
 │          テスト用画像.png
+│
+├─typst
+│  ├─core         # article/home/shared などの骨格
+│  ├─components   # widgets/alerts/embeds などの部品
+│  └─generated    # build.py が生成する一覧用データ
 │
 ├─Typstでブログを書く # 記事1
 │      index.pdf
@@ -87,7 +100,7 @@ BIBOUROKU.MINIMARIMO3.JP
 == `html.html`で出力されるHTMLの構造をカスタマイズ
 
 TypstのHTMLエクスポートは通常、文書内容を `<body>` タグ内に出力します。しかし、`<head>` 内にOGPタグや外部CSS読み込みを記述したい場合、これでは不十分です。
-そこで `template.typ` では、`html.html` 関数を使用して `<html>` タグから始まる完全なDOM構造を定義しました。
+そこで `typst/core/article.typ` では、`html.html` 関数を使用して `<html>` タグから始まる完全なDOM構造を定義しました。
 
 ```typc
 html.html(lang: "ja", {
@@ -126,14 +139,15 @@ html.html(lang: "ja", {
 単にランダムに選ぶとビルドのたびに内容が変わってしまうため、記事タイトルのハッシュ値をシード（種）として使用し、乱数生成器を初期化することで、ランダムでありながら常に同じ結果が得られるように工夫しました。
 
 ```typc
-// template.typより抜粋
+// typst/core/article.typより抜粋
 import "@preview/suiji:0.5.0": *
 
 // 自分以外かつ作成日が自分より若い記事が対象
-let other-posts = post-data.pairs().filter(p => p.last().title != title).filter(p => p.last().create < create)
+let other-posts = post-data.pairs().filter(p => p.first() != slug).filter(p => p.last().create < create)
 
-// 記事タイトルを数値化してシードにする
-let seed = int(title.clusters().map(str.to-unicode).map(str).join().slice(0, 14))
+// slugとタイトルを数値化してシードにする
+let seed-src = slug + title
+let seed = int(seed-src.clusters().map(str.to-unicode).map(str).join().slice(0, 14))
 let rng = gen-rng(seed)
 
 // 記事リストをシャッフル
@@ -146,43 +160,39 @@ let picks = indices.slice(0, 3).map(i => other-posts.at(i))
 == 記事の情報をTypstで管理する
 
 トップページの記事一覧やRSSフィードを生成するには、全記事のメタデータ（タイトルや更新日）が必要です。
-今回は`posts.typ`というファイルをデータベース代わりに使用するアーキテクチャを採用しました。
+今回は各記事の`index.typ`冒頭にメタデータを記述し、`typst query`でそれを収集するアーキテクチャを採用しました。
 
 ```typ 
-#let post-data = (
-  "Typstでブログを書く": (
-    title: "Typstでブログを書く",
-    create: datetime(year: 2025, month: 12, day: 14),
-    update: datetime(year: 2025, month: 12, day: 21),
-    description: "Typst v0.14の新機能を使って、Typstだけでブログシステムを構築する試み。",
-    tags: ("Typst", "HTML"),
-  ),
-  "テスト": (
-    title: "テスト",
-    create: datetime(year: 2025, month: 12, day: 12),
-    update: none,
-    description: "サイトの表示テスト",
-    tags: ("テスト",),
-  ),
+#import "../template.typ": article, d
+
+#let meta = (
+  slug: "Typstでブログを書く",
+  title: "Typstでブログを書く",
+  create: d(2025, 12, 14),
+  update: d(2025, 12, 21),
+  description: "Typst v0.14の新機能を使って、Typstだけでブログシステムを構築する試み。",
+  tags: ("Typst", "HTML"),
 )
 
-#metadata(post-data) <post-list>
+#metadata(meta) <post-meta>
+#show: article.with(..meta)
 ```
 
-Typstファイル内からは`import`することで辞書としてデータを扱えます：
+Typstファイル内ではそのまま`#show: article.with(..meta)`に流し込めます。一方で、トップページや関連記事用の一覧はビルド時に自動生成したファイルを`import`して扱います：
 
 ```typ
-#import "../template.typ": project
-#import "../posts.typ": post-data
-#let meta = post-data.at("Typstでブログを書く")
-#show: project.with(..meta)
+#import "/typst/generated/posts.typ": post-data
+
+#for post in post-data.values() {
+  [#post.title]
+}
 ```
 
 一方、ビルドスクリプト（Python）からは`typst query`コマンドを使用することで同じ情報をJSONで取得できます。
 
 ```py
 result = subprocess.run(
-    ["typst", "query", "posts.typ", "<post-list>"],
+    ["typst", "query", "--root", ".", "--features", "html", "article/index.typ", "<post-meta>"],
     capture_output=True,
     text=True,
     check=True,
@@ -193,35 +203,21 @@ data = json.loads(result.stdout)
 dataはこんな感じ: 
 ```json
 [
-	{
-		"func": "metadata",
-		"value": {
-			"Typstでブログを書く": {
-				"title": "Typstでブログを書く",
-				"create": "datetime(year: 2025, month: 12, day: 14)",
-				"update": "datetime(year: 2025, month: 12, day: 21)",
-				"description": "Typst v0.14の新機能を使って、Typstだけでブログシステムを構築する試み。",
-				"tags": [
-					"Typst",
-					"HTML"
-				]
-			},
-			"テスト": {
-				"title": "テスト",
-				"create": "datetime(year: 2025, month: 12, day: 12)",
-				"update": null,
-				"description": "サイトの表示テスト",
-				"tags": [
-					"テスト"
-				]
-			}
-		},
-		"label": "<post-list>"
-	}
+  {
+    "slug": "Typstでブログを書く",
+    "title": "Typstでブログを書く",
+    "create": "datetime(year: 2025, month: 12, day: 14)",
+    "update": "datetime(year: 2025, month: 12, day: 21)",
+    "description": "Typst v0.14の新機能を使って、Typstだけでブログシステムを構築する試み。",
+    "tags": [
+      "Typst",
+      "HTML"
+    ]
+  }
 ]
 ```
 
-これにより、MarkdownのFrontmatterのようなメタデータ管理をTypstの文法だけで統一して行えるようになりました。
+これにより、MarkdownのFrontmatterのようなメタデータ管理をTypstの文法だけで統一しつつ、記事を自己完結した単位として扱えるようになりました。
 
 == 未実装機能への対処
 

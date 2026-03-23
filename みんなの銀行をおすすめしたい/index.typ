@@ -1,7 +1,14 @@
-#import "../template.typ": project, note, note, tip, important, warning, caution, env
-#import "../posts.typ": post-data
-#let meta = post-data.at("みんなの銀行をおすすめしたい")
-#show: project.with(..meta)
+#import "../template.typ": article, d, note, tip, important, warning, caution, env
+
+#let meta = (
+  slug: "みんなの銀行をおすすめしたい",
+  title: "みんなの銀行をおすすめしたい",
+  create: d(2026, 3, 14),
+  description: "みんなの銀行を二次元文化好きの視点からおすすめする記事。口座から直接決済できる機能や手数料無料のことら送金、目的別に貯蓄を分けられるBox機能などを実際に使ってる人が紹介します。",
+)
+
+#metadata(meta) <post-meta>
+#show: article.with(..meta)
 
 
 = 時間無い。三行で教えて。
