@@ -4,6 +4,7 @@ import re
 import os
 import shutil
 import datetime
+import sys
 from xml.sax.saxutils import escape
 
 # --- 設定 ---
@@ -20,6 +21,7 @@ STATIC_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".pdf", "
 
 def build():
     print("🚀 ビルドを開始します...")
+    has_error = False  # エラー状態を追跡するフラグ
     
     # publicフォルダのリセット（必要ならコメントアウトを外す）
     if os.path.exists("public"):
@@ -38,18 +40,15 @@ def build():
         posts_dict = json.loads(result.stdout)[0]
         print(f"📄 {len(posts_dict)} 件の記事が見つかりました。\n")
     except Exception as e:
-        print(f"❌ エラー: 記事リストの取得に失敗しました。\n{e}")
-        return
+        print(f"❌ 致命的なエラー: 記事リストの取得に失敗しました。\n{e}")
+        sys.exit(1)  # 記事リストが取得できない場合は以降の処理が不可能なため即時終了
 
     # 記事リストを日付順にソート（新しい順）
-    # Typstのdatetimeオブジェクトは辞書として渡される場合があるのでパースする
     sorted_posts = []
     for dir_path, meta in posts_dict.items():
         meta["dir_path"] = dir_path
         # 日付のパース処理
         create_date = meta.get("create")
-        # 文字列の場合: "datetime(year: 2025, month: 12, day: 14)" 形式をパース
-        # 正規表現で year, month, day を抽出
         match = re.search(r"year:\s*(\d+),\s*month:\s*(\d+),\s*day:\s*(\d+)", create_date)
         if match:
             dt = datetime.datetime(
@@ -89,10 +88,10 @@ def build():
             ], check=True)
         except subprocess.CalledProcessError:
             print(f"❌ コンパイル失敗: {title}")
+            has_error = True  # エラーを記録して次の記事へ
             continue
 
         # (B) 静的ファイル（画像など）のコピー
-        # 記事ディレクトリ内のファイルを走査
         for filename in os.listdir(input_dir):
             base, ext = os.path.splitext(filename)
             if ext.lower() in STATIC_EXTENSIONS:
@@ -107,14 +106,18 @@ def build():
     # トップページ
     try:
         subprocess.run(["typst", "compile", "--features", "html", "--format", "html", "--root", ROOT_DIR, "index.typ", "public/index.html"], check=True)
-    except: print("❌ トップページのコンパイル失敗")
+    except subprocess.CalledProcessError:
+        print("❌ トップページのコンパイル失敗")
+        has_error = True
 
     # 404ページ
     if os.path.exists("404.typ"):
         try:
             subprocess.run(["typst", "compile", "--features", "html", "--format", "html", "--root", ROOT_DIR, "404.typ", "public/404.html"], check=True)
             print("✅ 404ページ生成完了")
-        except: print("❌ 404ページのコンパイル失敗")
+        except subprocess.CalledProcessError:
+            print("❌ 404ページのコンパイル失敗")
+            has_error = True
 
     # CSSコピー
     if os.path.exists(STYLE_CSS):
@@ -142,7 +145,13 @@ def build():
     print("\n📡 Generating RSS & Sitemap...")
     generate_rss(sorted_posts)
     generate_sitemap(sorted_posts)
-    print("✅ ビルド完了！")
+    
+    # 最終的なエラーステータスの判定と終了コードの返却
+    if has_error:
+        print("\n❌ ビルド中に一つ以上のエラーが発生しました。ログを確認してください。")
+        sys.exit(1)
+    else:
+        print("\n✅ ビルド完了！")
 
 
 def generate_rss(posts):

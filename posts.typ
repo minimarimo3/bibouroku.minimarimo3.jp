@@ -35,7 +35,7 @@
     "Zoteroのエクスポート形式にHayagrivaを追加する",
     d(2026, 03, 14),
     desc: "Typstで文献リストとして使用可能なHayagriva形式（YAML）ですがZoteroで直接エクスポートできないため、いったんbibファイルでエクスポートしてからhayagriva cliで変換する必要があります。地味に手間なのでZoteroから直接Hayagrivaでのエクスポートを可能にする拡張機能を作成しました。",
-    update: (2026, 03, 24)
+    update: d(2026, 03, 24)
   ),
   post(
     "Typstでブログを書く",
