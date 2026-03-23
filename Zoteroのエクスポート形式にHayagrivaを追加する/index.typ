@@ -90,23 +90,23 @@ Zoteroの再起動後、「コレクションをエクスポート」→「フ�
 
 ```yaml
 researchgate_net_2024_pdf_eyes_alive:
-  type: "article"
+  type: article
   title: "(PDF) Eyes Alive"
-  date: "2024-10-22"
+  date: 2024-10-22
   serial-number:
     doi: "10.1145/566570.566629"
-  language: "en"
+  language: en
   url:
-    value: "https://www.researchgate.net/publication/2534686_Eyes_Alive"
-    date: "2025-01-23"
+    value: https://www.researchgate.net/publication/2534686_Eyes_Alive
+    date: 2025-01-23
   abstract: "PDF | For an animated human face model to appear natural it should produce eye movements consistent with human ocular behavior. During face-to-face... | Find, read and cite all the research you need on ResearchGate"
   note: "Catalog: www.researchgate.net"
   parent:
-    type: "periodical"
+    type: periodical
     title: "ResearchGate"
 
 venture_2014_recognizing_emotions_convey:
-  type: "article"
+  type: article
   title: "Recognizing Emotions Conveyed by Human Gait"
   author:
     - "Venture, Gentiane"
@@ -115,31 +115,31 @@ venture_2014_recognizing_emotions_convey:
     - "Grèzes, Julie"
     - "Berthoz, Alain"
     - "Hicheur, Halim"
-  date: "2014-11-01"
+  date: 2014-11-01
   serial-number:
     doi: "10.1007/s12369-014-0243-1"
     issn: "1875-4805"
-  language: "en"
-  page-range: "621-632"
+  language: en
+  page-range: 621-632
   url:
-    value: "https://doi.org/10.1007/s12369-014-0243-1"
-    date: "2025-01-23"
+    value: https://doi.org/10.1007/s12369-014-0243-1
+    date: 2025-01-23
   abstract: "Humans convey emotions through different ways. Gait is one of them. Here we propose to use gait data to highlight features that characterize emotions. Gait analysis study usually focuses on stance phase, frequency, footstep length. Here the study is based on the joint angles obtained from inverse kinematics computation from the 3D motion-capture data using a combination of degrees of freedom (DOF) out of a 34DOF human body model obtained from inverse kinematics of markers 3D position. The candidates are four professional actors, and five emotional states are simulated: Neutral, Joy, Anger, Sadness, and Fear. The paper presents first a psychological approach which results are used to propose numerical approaches. The first study provides psychological results on motion perception and the possibility of emotion recognition from gait by 32 observers. Then, the motion data is studied using a feature vector approach to verify the numerical identifiability of the emotions. Finally each motion is tested against a database of reference motions to identify the conveyed emotion. Using the first and second study results, we utilize a 6DOF model then a 12DOF model. The experimental results show that by using the gait characteristics it is possible to characterize each emotion with good accuracy for intra-subject data-base. For inter-subject database results show that recognition is more prone to error, suggesting strong inter-personal differences in emotional features."
   note: "Catalog: Springer Link"
   parent:
-    type: "periodical"
+    type: periodical
     title: "International Journal of Social Robotics"
-    volume: "6"
-    issue: "4"
+    volume: 6
+    issue: 4
 
 square_umin_ac_jp_教育活動:
-  type: "web"
+  type: web
   title: "教育活動"
   url:
-    value: "https://square.umin.ac.jp/haru-labo/kine/kine_main.html"
-    date: "2025-01-23"
+    value: https://square.umin.ac.jp/haru-labo/kine/kine_main.html
+    date: 2025-01-23
   parent:
-    type: "web"
+    type: web
 ```
 
 == Hayagriva cliで変換したHayagriva
