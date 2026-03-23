@@ -40,7 +40,7 @@ jobs:
         run: |
           echo "Installing Typst $TYPST_VERSION..."
           
-          wget -q https://github.com/typst/typst/releases/download/$TYPST_VERSION/typst-x86_64-unknown-linux-musl.tar.xz
+          wget -q https://github.com/typst/typst/releases/download/v$TYPST_VERSION/typst-x86_64-unknown-linux-musl.tar.xz
           tar -xf typst-x86_64-unknown-linux-musl.tar.xz
           
           # パスを通す
