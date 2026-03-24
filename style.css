@@ -958,3 +958,17 @@ tbody tr:nth-of-type(even) {
 .meta-pdf-link:hover {
   text-decoration: underline;
 }
+
+/* --- 日記 --- */
+.diary-status {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  margin-bottom: 24px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
