@@ -41,7 +41,7 @@
 ) = context {
   set document(title: title, author: authors)
   set heading(numbering: "1.")
-  set text(lang: "ja")
+  set text(lang: "ja", font: main-font)
   show figure.where(kind: table): set figure.caption(position: top)
   show figure.where(kind: raw): set figure(supplement: "コード")
 
