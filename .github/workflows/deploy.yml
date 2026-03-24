@@ -47,6 +47,11 @@ jobs:
           sudo mv typst-x86_64-unknown-linux-musl/typst /usr/local/bin/typst
           typst --version
 
+      - name: Install Noto Fonts
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fonts-noto-cjk
+
       # build.py を実行して静的サイトを生成
       - name: Build Site
         run: python3 build.py
