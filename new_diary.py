@@ -25,6 +25,7 @@ TEMPLATE = """\
   create: d({year}, {month}, {day}),
   description: "{year}年{month}月{day}日の日記",
   tags: ("日記",),
+  draft: true,
 )
 
 #metadata(meta) <post-meta>

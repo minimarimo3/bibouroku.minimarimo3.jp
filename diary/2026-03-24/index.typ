@@ -6,6 +6,7 @@
   create: d(2026, 3, 24),
   description: "2026年3月24日の日記",
   tags: ("日記",),
+  draft: true
 )
 
 #metadata(meta) <post-meta>
