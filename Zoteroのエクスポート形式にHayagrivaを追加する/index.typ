@@ -25,8 +25,9 @@ HayagrivaというのはTypstが開発している文献管理用の形式で、
 
 しかし私が使用している文献管理サービスであるZoteroはHayagrivaでのエクスポートをサポートしていません。
 #footnote[
-  Hayagrivaの直接エクスポートをサポートしているOSSの文献管理サービスとしては#link("https://www.jabref.org")[JabRef]というものがあり、ソフトそのものの使用感は悪くないです。
-  しかし、#link("https://github.com/JabRef/JabRef-Browser-Extension")[JabRef Browser Extension(JabRef版Zotero Connector)]がManifest V2でアプデの希望もなさそうな感じなので使用は見送りました。（今ならAIにお任せすればできそうではありますね）
+  Hayagrivaの直接エクスポートをサポートしているOSSの文献管理サービスとしては#link("https://www.jabref.org")[JabRef]というものがあります。
+  しかし執筆開始時点では#link("https://github.com/JabRef/JabRef-Browser-Extension")[JabRef Browser Extension(JabRef版Zotero Connector)]がmanifest V2だったため候補から外していました。
+  今ならこれを使ってもいいかもしれません。
 ]
 hayagriva cliを使用して機械的に変換することも考えましたが、もともとWebサイトをZoteroで管理しているとbibでエクスポートしたときにキーが`noauthor`と`nodate`だらけになることに不満を覚えていたこともあり、拡張機能を作りました。
 
