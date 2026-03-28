@@ -972,3 +972,7 @@ tbody tr:nth-of-type(even) {
   font-size: 0.95rem;
   color: var(--text-muted);
 }
+
+p, h1, h2, h3, h4, li, .article-abstract {
+  word-break: auto-phrase;
+}
