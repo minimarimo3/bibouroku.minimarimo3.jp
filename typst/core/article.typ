@@ -91,7 +91,6 @@
                   if update != none {
                     html.span(class: "meta-date", "最終更新日: " + update.display("[year]-[month]-[day]"))
                   }
-                  html.a(class: "meta-pdf-link", href: "index.pdf", target: "_blank", "PDF")
                 })
                 if tags.len() > 0 {
                   html.div(class: "meta-tags", {
